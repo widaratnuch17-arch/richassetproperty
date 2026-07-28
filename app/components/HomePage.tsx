@@ -1,0 +1,803 @@
+"use client";
+
+import {
+  ArrowDown,
+  ArrowRight,
+  Bath,
+  BedDouble,
+  Building2,
+  CarFront,
+  Check,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  FileCheck2,
+  House,
+  KeyRound,
+  LandPlot,
+  MapPin,
+  Menu,
+  MessageCircle,
+  Phone,
+  Ruler,
+  Search,
+  ShieldCheck,
+  Sparkles,
+  X,
+} from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import Image from "next/image";
+import { useMemo, useState } from "react";
+
+const PHONE = "061-359-1699";
+const LINE_ID = "richhouseagent99";
+const LINE_URL = "https://line.me/ti/p/~richhouseagent99";
+
+type Property = {
+  id: string;
+  type: "บ้านแฝด" | "ทาวน์โฮม";
+  title: string;
+  location: string;
+  price: string;
+  land: string;
+  usableArea: string;
+  bedrooms: number;
+  bathrooms: number;
+  parking: number;
+  summary: string;
+  highlights: string[];
+  nearby: string[];
+  map: string;
+  images: string[];
+};
+
+const properties: Property[] = [
+  {
+    id: "baanfah",
+    type: "บ้านแฝด",
+    title: "บ้านฟ้ากรีนพาร์ค รังสิตคลอง 3",
+    location: "บึงยี่โถ ธัญบุรี ปทุมธานี",
+    price: "2,390,000 บาท",
+    land: "36.7 ตร.ว.",
+    usableArea: "154 ตร.ม.",
+    bedrooms: 3,
+    bathrooms: 2,
+    parking: 1,
+    summary:
+      "บ้านแฝดสไตล์บ้านเดี่ยว 2 ชั้น หน้าบ้านทิศเหนือ พร้อมส่วนกลางและระบบรักษาความปลอดภัย",
+    highlights: [
+      "1 ห้องโถง 1 ห้องครัว",
+      "สวนสาธารณะ สระว่ายน้ำ และฟิตเนส",
+      "ระบบคีย์การ์ด CCTV และ รปภ. 24 ชม.",
+      "เดินทางเชื่อมถนนรังสิต–นครนายกและวงแหวนตะวันออก",
+    ],
+    nearby: [
+      "ฟิวเจอร์พาร์ค รังสิต",
+      "ZPELL",
+      "ดรีมเวิลด์",
+      "โรงพยาบาลเปาโลรังสิต",
+    ],
+    map: "https://maps.app.goo.gl/AESRb2o2AMePZSJKA",
+    images: [
+      "/assets/property-baanfah-cover.jpg",
+      "/assets/property-baanfah-room.jpg",
+      "/assets/property-baanfah-2.jpg",
+      "/assets/property-baanfah-3.jpg",
+    ],
+  },
+  {
+    id: "mirth",
+    type: "ทาวน์โฮม",
+    title: "The Mirth Lite เพชรเกษม 63",
+    location: "หลักสอง บางแค กรุงเทพมหานคร",
+    price: "4,690,000 บาท",
+    land: "22.10 ตร.ว.",
+    usableArea: "180 ตร.ม.",
+    bedrooms: 3,
+    bathrooms: 4,
+    parking: 2,
+    summary:
+      "ทาวน์โฮม 3 ชั้น หน้าสวน ซอยแรกของโครงการ ห้องนั่งเล่นเพดานสูงและพร้อมเข้าอยู่",
+    highlights: [
+      "ห้องนั่งเล่น Double Volume สูง 6.3 เมตร",
+      "เฟอร์นิเจอร์ Built-in แอร์ 4 เครื่อง",
+      "ต่อเติมครัว พร้อมปั๊มน้ำและแทงก์น้ำ",
+      "ใกล้ MRT หลักสอง และเดอะมอลล์บางแค",
+    ],
+    nearby: [
+      "MRT หลักสอง",
+      "เดอะมอลล์บางแค",
+      "ซีคอนบางแค",
+      "โรงพยาบาลเกษมราษฎร์",
+    ],
+    map: "https://maps.app.goo.gl/y7fgzLuRCCYiJnBT7",
+    images: [
+      "/assets/property-mirth-cover.jpg",
+      "/assets/property-mirth-carport.png",
+      "/assets/property-mirth-2.png",
+      "/assets/property-mirth-3.png",
+    ],
+  },
+  {
+    id: "jgrand",
+    type: "ทาวน์โฮม",
+    title: "J GRAND สาทร–กัลปพฤกษ์",
+    location: "กัลปพฤกษ์ บางแค กรุงเทพมหานคร",
+    price: "3,999,000 บาท",
+    land: "18.5 ตร.ว.",
+    usableArea: "161 ตร.ม.",
+    bedrooms: 4,
+    bathrooms: 3,
+    parking: 2,
+    summary:
+      "ทาวน์โฮม 3 ชั้น หน้าบ้านไม่ชนใคร ติดถนนใหญ่กัลปพฤกษ์ เดินทางเข้าสาทรสะดวก",
+    highlights: [
+      "ครัว Built-in พร้อมใช้งาน",
+      "ต่อเติมหลังคาจอดรถและพื้นที่ซักล้าง",
+      "แอร์ 5 เครื่อง พร้อมผ้าม่าน ปั๊มน้ำและแทงก์น้ำ",
+      "สระว่ายน้ำ ฟิตเนส Key Card และ รปภ. 24 ชม.",
+    ],
+    nearby: [
+      "MRT สายสีน้ำเงิน",
+      "BTS วุฒากาศ",
+      "เดอะมอลล์บางแค",
+      "เซ็นทรัลพระราม 2",
+    ],
+    map: "https://maps.app.goo.gl/YDLdaLFPpf4niF4a9",
+    images: [
+      "/assets/property-jgrand-cover.jpg",
+      "/assets/property-jgrand-room.jpg",
+      "/assets/property-jgrand-2.jpg",
+      "/assets/property-jgrand-3.jpg",
+    ],
+  },
+];
+
+const services = [
+  {
+    number: "01",
+    title: "วิเคราะห์ราคาตลาด",
+    text: "ศึกษาทรัพย์เปรียบเทียบและแนะนำราคาตั้งขายที่เหมาะกับสภาพและทำเล",
+    icon: Search,
+  },
+  {
+    number: "02",
+    title: "เตรียมสื่อให้ทรัพย์น่าสนใจ",
+    text: "ถ่ายภาพ เขียนประกาศ ทำคอนเทนต์และคลิปรีวิวให้เห็นจุดเด่นได้เร็ว",
+    icon: Sparkles,
+  },
+  {
+    number: "03",
+    title: "ทำการตลาดครบช่องทาง",
+    text: "กระจายประกาศและวางแผนโฆษณาโดยไม่มีค่าใช้จ่ายล่วงหน้าจนกว่าจะขายได้",
+    icon: Building2,
+  },
+  {
+    number: "04",
+    title: "คัดกรองผู้ซื้อและสินเชื่อ",
+    text: "ตรวจสอบความพร้อมของผู้สนใจ นัดชม และช่วยประสานการยื่นสินเชื่อ",
+    icon: ShieldCheck,
+  },
+  {
+    number: "05",
+    title: "ดูแลสัญญาจนถึงวันโอน",
+    text: "เตรียมเอกสาร ประเมินค่าใช้จ่าย และประสานทุกฝ่ายจนการขายสำเร็จ",
+    icon: FileCheck2,
+  },
+];
+
+const faqs = [
+  {
+    q: "รับฝากขายทรัพย์ประเภทใดและพื้นที่ไหนบ้าง?",
+    a: "รับบ้านเดี่ยว บ้านแฝด ทาวน์โฮม คอนโด และที่ดิน โดยเน้นนนทบุรี กรุงเทพฯ และปริมณฑล โดยเฉพาะราชพฤกษ์ ติวานนท์ และแจ้งวัฒนะ",
+  },
+  {
+    q: "มีค่าใช้จ่ายการตลาดล่วงหน้าหรือไม่?",
+    a: "ไม่มีค่าใช้จ่ายการตลาดล่วงหน้า นุชทำการตลาดให้และรับค่าคอมมิชชัน 3% จากราคาขายจริงเมื่อขายสำเร็จ หากขายไม่ได้ เจ้าของทรัพย์ไม่มีค่าใช้จ่าย",
+  },
+  {
+    q: "ทำไมจึงใช้สัญญาฝากขายแบบปิด 6 เดือน?",
+    a: "เพื่อให้นุชวางแผนราคา ลงทุนทำสื่อและทำการตลาดได้อย่างเต็มที่ รวมถึงควบคุมข้อมูล ราคา และการนัดชมให้เป็นระบบเดียวกัน",
+  },
+  {
+    q: "บ้านติดจำนองยังขายได้หรือไม่?",
+    a: "โดยทั่วไปสามารถวางแผนการขายได้ แต่ต้องตรวจสอบยอดหนี้ เอกสารกรรมสิทธิ์ และเงื่อนไขของแต่ละเคสก่อน นุชจะช่วยประสานขั้นตอนที่เกี่ยวข้อง",
+  },
+  {
+    q: "ช่วยผู้ซื้อยื่นสินเชื่อด้วยไหม?",
+    a: "นุชช่วยคัดกรองความพร้อมเบื้องต้นและประสานการยื่นสินเชื่อ เพื่อให้ผู้ซื้อและผู้ขายเห็นแนวทางที่ชัดเจนก่อนเดินหน้าสัญญา",
+  },
+  {
+    q: "เริ่มฝากขายต้องเตรียมอะไรบ้าง?",
+    a: "เริ่มจากส่งประเภททรัพย์ ทำเล ขนาด ราคาที่ต้องการขาย รูปถ่ายเบื้องต้น และข้อมูลภาระจำนองถ้ามี ผ่าน LINE เพื่อให้นุชประเมินแนวทางเบื้องต้นก่อน",
+  },
+];
+
+const navItems = [
+  { label: "ทรัพย์เด่น", href: "#properties" },
+  { label: "บริการ", href: "#services" },
+  { label: "ผลงาน", href: "#success" },
+  { label: "เกี่ยวกับนุช", href: "#about" },
+];
+
+function FadeUp({
+  children,
+  delay = 0,
+  className = "",
+}: {
+  children: React.ReactNode;
+  delay?: number;
+  className?: string;
+}) {
+  return (
+    <motion.div
+      className={className}
+      initial={{ opacity: 0, y: 28 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-60px" }}
+      transition={{ duration: 0.65, delay, ease: [0.22, 1, 0.36, 1] }}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+function ContactButtons({ compact = false }: { compact?: boolean }) {
+  return (
+    <div className={`contact-buttons ${compact ? "contact-buttons--compact" : ""}`}>
+      <a className="button button--primary" href={LINE_URL} target="_blank" rel="noreferrer">
+        <MessageCircle size={19} aria-hidden />
+        ปรึกษาทาง LINE
+      </a>
+      <a className="button button--ghost" href={`tel:${PHONE.replaceAll("-", "")}`}>
+        <Phone size={18} aria-hidden />
+        {PHONE}
+      </a>
+    </div>
+  );
+}
+
+function PropertyModal({
+  property,
+  onClose,
+}: {
+  property: Property;
+  onClose: () => void;
+}) {
+  const [activeImage, setActiveImage] = useState(0);
+
+  const moveImage = (direction: number) => {
+    setActiveImage(
+      (current) =>
+        (current + direction + property.images.length) % property.images.length,
+    );
+  };
+
+  return (
+    <motion.div
+      className="modal-backdrop"
+      role="dialog"
+      aria-modal="true"
+      aria-label={`รายละเอียด ${property.title}`}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onMouseDown={(event) => {
+        if (event.currentTarget === event.target) onClose();
+      }}
+    >
+      <motion.div
+        className="property-modal"
+        initial={{ opacity: 0, scale: 0.97, y: 24 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.98, y: 16 }}
+        transition={{ duration: 0.25 }}
+      >
+        <button className="modal-close" type="button" onClick={onClose} aria-label="ปิด">
+          <X size={22} />
+        </button>
+
+        <div className="modal-gallery">
+          <Image
+            src={property.images[activeImage]}
+            alt={`${property.title} ภาพที่ ${activeImage + 1}`}
+            fill
+            sizes="(max-width: 900px) 100vw, 58vw"
+          />
+          <button
+            type="button"
+            className="gallery-nav gallery-nav--left"
+            onClick={() => moveImage(-1)}
+            aria-label="ภาพก่อนหน้า"
+          >
+            <ChevronLeft />
+          </button>
+          <button
+            type="button"
+            className="gallery-nav gallery-nav--right"
+            onClick={() => moveImage(1)}
+            aria-label="ภาพถัดไป"
+          >
+            <ChevronRight />
+          </button>
+          <span className="gallery-count">
+            {activeImage + 1} / {property.images.length}
+          </span>
+        </div>
+
+        <div className="modal-content">
+          <div className="property-kicker">
+            <span>{property.type}</span>
+            <span className="dot" />
+            <span>ขาย</span>
+          </div>
+          <h2>{property.title}</h2>
+          <p className="location-line">
+            <MapPin size={17} />
+            {property.location}
+          </p>
+          <p className="modal-price">{property.price}</p>
+          <div className="modal-specs">
+            <span><LandPlot /> {property.land}</span>
+            <span><Ruler /> {property.usableArea}</span>
+            <span><BedDouble /> {property.bedrooms} ห้องนอน</span>
+            <span><Bath /> {property.bathrooms} ห้องน้ำ</span>
+            <span><CarFront /> {property.parking} ที่จอดรถ</span>
+          </div>
+          <p className="modal-summary">{property.summary}</p>
+          <div className="modal-lists">
+            <div>
+              <h3>จุดเด่น</h3>
+              <ul>
+                {property.highlights.map((item) => (
+                  <li key={item}><Check size={16} />{item}</li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <h3>สถานที่ใกล้เคียง</h3>
+              <ul>
+                {property.nearby.map((item) => (
+                  <li key={item}><MapPin size={16} />{item}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+          <div className="modal-actions">
+            <a className="button button--primary" href={LINE_URL} target="_blank" rel="noreferrer">
+              <MessageCircle size={18} />
+              นัดชมทรัพย์
+            </a>
+            <a className="button button--ghost" href={property.map} target="_blank" rel="noreferrer">
+              <MapPin size={18} />
+              เปิดแผนที่
+            </a>
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+export function HomePage() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [filter, setFilter] = useState<"ทั้งหมด" | Property["type"]>("ทั้งหมด");
+  const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
+
+  const filteredProperties = useMemo(
+    () =>
+      filter === "ทั้งหมด"
+        ? properties
+        : properties.filter((property) => property.type === filter),
+    [filter],
+  );
+
+  return (
+    <main>
+      <a className="skip-link" href="#main-content">ข้ามไปยังเนื้อหาหลัก</a>
+
+      <header className="site-header">
+        <a className="brand" href="#top" aria-label="Rich Asset Property หน้าแรก">
+          <Image
+            src="/assets/brand-logo.svg"
+            alt="Rich Asset Property"
+            width={96}
+            height={96}
+            priority
+          />
+          <span>
+            <strong>RICH ASSET</strong>
+            <small>PROPERTY</small>
+          </span>
+        </a>
+
+        <nav className="desktop-nav" aria-label="เมนูหลัก">
+          {navItems.map((item) => (
+            <a key={item.href} href={item.href}>{item.label}</a>
+          ))}
+        </nav>
+
+        <a className="header-line" href={LINE_URL} target="_blank" rel="noreferrer">
+          <MessageCircle size={18} />
+          LINE
+        </a>
+
+        <button
+          type="button"
+          className="menu-button"
+          aria-label={menuOpen ? "ปิดเมนู" : "เปิดเมนู"}
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen((open) => !open)}
+        >
+          {menuOpen ? <X /> : <Menu />}
+        </button>
+
+        <AnimatePresence>
+          {menuOpen && (
+            <motion.nav
+              className="mobile-nav"
+              aria-label="เมนูมือถือ"
+              initial={{ opacity: 0, y: -12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+            >
+              {navItems.map((item) => (
+                <a key={item.href} href={item.href} onClick={() => setMenuOpen(false)}>
+                  {item.label}<ArrowRight size={17} />
+                </a>
+              ))}
+              <a href={LINE_URL} target="_blank" rel="noreferrer">
+                ปรึกษาฝากขาย<ArrowRight size={17} />
+              </a>
+            </motion.nav>
+          )}
+        </AnimatePresence>
+      </header>
+
+      <section className="hero" id="top">
+        <div className="hero-orb hero-orb--one" />
+        <div className="hero-orb hero-orb--two" />
+        <div className="hero-content" id="main-content">
+          <motion.div
+            className="hero-copy"
+            initial={{ opacity: 0, y: 28 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <p className="eyebrow">
+              <span />
+              บ้านมือสอง • นนทบุรี กรุงเทพฯ และปริมณฑล
+            </p>
+            <h1>
+              ซื้อ–ขายบ้าน
+              <span>อย่างมั่นใจ</span>
+              ในทุกขั้นตอน
+            </h1>
+            <p className="hero-lead">
+              นุชดูแลตั้งแต่ประเมินราคา ทำการตลาด คัดกรองผู้ซื้อ
+              สินเชื่อ เอกสาร จนถึงวันโอน
+            </p>
+            <ContactButtons />
+            <div className="hero-points" aria-label="จุดเด่นบริการ">
+              <span><Check /> ไม่มีค่าใช้จ่ายล่วงหน้า</span>
+              <span><Check /> ดูแลเองทุกเคส</span>
+            </div>
+          </motion.div>
+
+          <motion.div
+            className="hero-visual"
+            initial={{ opacity: 0, scale: 0.96, y: 24 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.85, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div className="hero-house">
+              <Image
+                src="/assets/property-mirth-cover.jpg"
+                alt="ทาวน์โฮมที่ดูแลโดย Rich Asset Property"
+                fill
+                sizes="(max-width: 900px) 92vw, 48vw"
+                priority
+              />
+              <div className="hero-house-label">
+                <span>ทรัพย์แนะนำ</span>
+                <strong>The Mirth Lite</strong>
+                <small>เพชรเกษม 63 • 4.69 ล้านบาท</small>
+              </div>
+            </div>
+            <div className="nuch-cutout">
+              <Image
+                src="/assets/nuch-portrait.svg"
+                alt="นุช นายหน้าอสังหาริมทรัพย์ Rich Asset Property"
+                fill
+                sizes="(max-width: 900px) 50vw, 22vw"
+                priority
+              />
+            </div>
+            <div className="hero-badge">
+              <KeyRound />
+              <span><strong>ครบทุกขั้นตอน</strong><small>จนถึงวันโอน</small></span>
+            </div>
+          </motion.div>
+        </div>
+        <a className="scroll-cue" href="#properties">
+          ดูทรัพย์เด่น
+          <ArrowDown size={17} />
+        </a>
+      </section>
+
+      <section className="trust-strip" aria-label="ข้อเสนอรับฝากขาย">
+        <div>
+          <span>01</span>
+          <p><strong>0 บาท</strong><small>ค่าใช้จ่ายการตลาดล่วงหน้า</small></p>
+        </div>
+        <div>
+          <span>02</span>
+          <p><strong>3%</strong><small>ค่าคอมมิชชันเมื่อขายสำเร็จ</small></p>
+        </div>
+        <div>
+          <span>03</span>
+          <p><strong>6 เดือน</strong><small>สัญญาฝากขายแบบปิด</small></p>
+        </div>
+        <div>
+          <span>04</span>
+          <p><strong>ครบวงจร</strong><small>ราคา การตลาด สินเชื่อ เอกสาร</small></p>
+        </div>
+      </section>
+
+      <section className="section properties-section" id="properties">
+        <FadeUp className="section-heading-row">
+          <div>
+            <p className="section-kicker">Selected properties</p>
+            <h2>ทรัพย์เด่น<br />ที่น่าสนใจ</h2>
+          </div>
+          <p className="section-intro">
+            คัดข้อมูลสำคัญให้เห็นง่าย พร้อมรายละเอียดจริงสำหรับตัดสินใจก่อนนัดชม
+          </p>
+        </FadeUp>
+
+        <div className="filter-row" role="group" aria-label="กรองประเภททรัพย์">
+          {(["ทั้งหมด", "บ้านแฝด", "ทาวน์โฮม"] as const).map((item) => (
+            <button
+              type="button"
+              key={item}
+              className={filter === item ? "active" : ""}
+              onClick={() => setFilter(item)}
+            >
+              {item}
+            </button>
+          ))}
+        </div>
+
+        <motion.div className="property-grid" layout>
+          <AnimatePresence mode="popLayout">
+            {filteredProperties.map((property, index) => (
+              <motion.article
+                className="property-card"
+                key={property.id}
+                layout
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.98 }}
+                transition={{ duration: 0.35, delay: index * 0.06 }}
+              >
+                <button
+                  type="button"
+                  className="property-image"
+                  onClick={() => setSelectedProperty(property)}
+                  aria-label={`ดูรายละเอียด ${property.title}`}
+                >
+                  <Image
+                    src={property.images[0]}
+                    alt={property.title}
+                    fill
+                    sizes="(max-width: 760px) 92vw, (max-width: 1100px) 44vw, 31vw"
+                  />
+                  <span className="property-type">{property.type}</span>
+                  <span className="image-arrow"><ArrowRight /></span>
+                </button>
+                <div className="property-body">
+                  <p className="property-location"><MapPin />{property.location}</p>
+                  <h3>{property.title}</h3>
+                  <p className="property-price">{property.price}</p>
+                  <div className="property-specs">
+                    <span><LandPlot />{property.land}</span>
+                    <span><BedDouble />{property.bedrooms}</span>
+                    <span><Bath />{property.bathrooms}</span>
+                    <span><CarFront />{property.parking}</span>
+                  </div>
+                  <button
+                    type="button"
+                    className="text-link"
+                    onClick={() => setSelectedProperty(property)}
+                  >
+                    ดูรายละเอียดทั้งหมด <ArrowRight size={17} />
+                  </button>
+                </div>
+              </motion.article>
+            ))}
+          </AnimatePresence>
+        </motion.div>
+      </section>
+
+      <section className="about-section" id="about">
+        <div className="about-image-wrap">
+          <div className="about-image">
+            <Image
+              src="/assets/nuch-about.svg"
+              alt="นุช Rich Asset Property"
+              fill
+              sizes="(max-width: 900px) 92vw, 44vw"
+            />
+          </div>
+          <div className="about-caption">
+            <House />
+            <span>นุช<br /><strong>Rich Asset Property</strong></span>
+          </div>
+        </div>
+        <FadeUp className="about-copy">
+          <p className="section-kicker section-kicker--light">Meet Nuch</p>
+          <h2>ดูแลเอง<br />ทุกเคส</h2>
+          <p className="about-lead">
+            เพราะบ้านหนึ่งหลังไม่ใช่แค่ประกาศขาย แต่เป็นทรัพย์สินสำคัญ
+            นุชจึงดูแลทั้งราคา เอกสาร ค่าใช้จ่าย ผู้ซื้อและสินเชื่ออย่างชัดเจน
+          </p>
+          <div className="about-values">
+            <div><ShieldCheck /><span><strong>ตรงไปตรงมา</strong><small>ข้อมูลชัดเจน ไม่กล่าวอ้างเกินจริง</small></span></div>
+            <div><FileCheck2 /><span><strong>ทำงานเป็นระบบ</strong><small>ติดตามทุกขั้นตอนจนถึงวันโอน</small></span></div>
+            <div><MessageCircle /><span><strong>คุยง่ายและรายงานผล</strong><small>เจ้าของทรัพย์รู้ความคืบหน้าเสมอ</small></span></div>
+          </div>
+          <ContactButtons compact />
+        </FadeUp>
+      </section>
+
+      <section className="section services-section" id="services">
+        <FadeUp className="services-title">
+          <p className="section-kicker">How we work</p>
+          <h2>หนึ่งคนดูแล<br />ครบทุกขั้นตอน</h2>
+        </FadeUp>
+        <div className="service-list">
+          {services.map((service, index) => {
+            const Icon = service.icon;
+            return (
+              <FadeUp className="service-row" delay={index * 0.05} key={service.number}>
+                <span className="service-number">{service.number}</span>
+                <span className="service-icon"><Icon /></span>
+                <div>
+                  <h3>{service.title}</h3>
+                  <p>{service.text}</p>
+                </div>
+              </FadeUp>
+            );
+          })}
+        </div>
+        <div className="service-gallery">
+          {["service-2.jpg", "service-3.jpg", "service-4.jpg"].map((image, index) => (
+            <FadeUp className="service-photo" delay={index * 0.08} key={image}>
+              <Image
+                src={`/assets/${image}`}
+                alt={`ภาพการดูแลลูกค้าและการดำเนินงาน ภาพที่ ${index + 1}`}
+                fill
+                sizes="(max-width: 760px) 88vw, 30vw"
+              />
+            </FadeUp>
+          ))}
+        </div>
+      </section>
+
+      <section className="success-section" id="success">
+        <div className="success-head">
+          <FadeUp>
+            <p className="section-kicker section-kicker--light">Real moments</p>
+            <h2>จากวันเริ่มขาย<br />ถึงวันส่งมอบ</h2>
+          </FadeUp>
+          <FadeUp delay={0.08}>
+            <p>
+              ภาพจริงส่วนหนึ่งจากการทำสัญญาและวันโอน
+              เบื้องหลังทุกภาพคือการประสานงานที่ต้องชัดเจนและรอบคอบ
+            </p>
+          </FadeUp>
+        </div>
+        <div className="success-track">
+          {["success-1.jpg", "success-2.jpg", "success-3.jpg", "success-4.jpg", "success-5.jpg"].map(
+            (image, index) => (
+              <motion.div
+                className={`success-card success-card--${(index % 3) + 1}`}
+                key={image}
+                initial={{ opacity: 0, y: 34 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-80px" }}
+                transition={{ duration: 0.6, delay: index * 0.06 }}
+              >
+                <Image
+                  src={`/assets/${image}`}
+                  alt={`ผลงานดูแลลูกค้าจนถึงวันโอน ภาพที่ ${index + 1}`}
+                  fill
+                  sizes="(max-width: 760px) 76vw, 25vw"
+                />
+                <span>{String(index + 1).padStart(2, "0")}</span>
+              </motion.div>
+            ),
+          )}
+        </div>
+      </section>
+
+      <section className="seller-section" id="sell">
+        <div className="seller-card">
+          <FadeUp>
+            <p className="section-kicker">For property owners</p>
+            <h2>มีบ้านต้องการขาย<br />แต่ไม่รู้เริ่มตรงไหน?</h2>
+            <p className="seller-lead">
+              ส่งข้อมูลทรัพย์ให้นุชประเมินแนวทางเบื้องต้น
+              พร้อมคุยเรื่องราคา แผนการตลาดและขั้นตอนอย่างตรงไปตรงมา
+            </p>
+          </FadeUp>
+          <FadeUp className="seller-offer" delay={0.08}>
+            <div><span>01</span><p><strong>ไม่มีค่าใช้จ่ายล่วงหน้า</strong><small>เริ่มทำการตลาดโดยเจ้าของไม่ต้องสำรองจ่าย</small></p></div>
+            <div><span>02</span><p><strong>จ่ายเมื่อขายสำเร็จ</strong><small>ค่าคอมมิชชัน 3% จากราคาขายจริง</small></p></div>
+            <div><span>03</span><p><strong>นุชดูแลครบ</strong><small>ราคา สื่อ ผู้ซื้อ สินเชื่อ เอกสาร และวันโอน</small></p></div>
+            <ContactButtons />
+            <p className="seller-note">
+              เตรียมเพียงทำเล ประเภททรัพย์ ขนาด ราคาที่ต้องการขายและรูปเบื้องต้น
+            </p>
+          </FadeUp>
+        </div>
+      </section>
+
+      <section className="section faq-section">
+        <FadeUp className="faq-heading">
+          <p className="section-kicker">Before we talk</p>
+          <h2>คำถามที่พบบ่อย</h2>
+        </FadeUp>
+        <div className="faq-list">
+          {faqs.map((item, index) => (
+            <FadeUp delay={index * 0.035} key={item.q}>
+              <details>
+                <summary>
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  {item.q}
+                  <ChevronDown className="faq-chevron" />
+                </summary>
+                <p>{item.a}</p>
+              </details>
+            </FadeUp>
+          ))}
+        </div>
+      </section>
+
+      <footer>
+        <div className="footer-main">
+          <Image
+            src="/assets/brand-logo.svg"
+            alt="Rich Asset Property"
+            width={180}
+            height={180}
+          />
+          <div>
+            <p className="footer-eyebrow">พร้อมคุยเรื่องบ้านของคุณ</p>
+            <h2>ให้เรื่องซื้อ–ขายบ้าน<br />ชัดเจนตั้งแต่วันแรก</h2>
+          </div>
+          <ContactButtons />
+        </div>
+        <div className="footer-bottom">
+          <p>© 2026 Rich Asset Property</p>
+          <p>โทร {PHONE} · LINE {LINE_ID}</p>
+          <a href="#top">กลับด้านบน <ArrowDown className="up-arrow" size={15} /></a>
+        </div>
+      </footer>
+
+      <div className="mobile-contact-bar">
+        <a href={`tel:${PHONE.replaceAll("-", "")}`}><Phone /> โทรหานุช</a>
+        <a href={LINE_URL} target="_blank" rel="noreferrer"><MessageCircle /> LINE</a>
+      </div>
+
+      <AnimatePresence>
+        {selectedProperty && (
+          <PropertyModal
+            property={selectedProperty}
+            onClose={() => setSelectedProperty(null)}
+          />
+        )}
+      </AnimatePresence>
+    </main>
+  );
+}
