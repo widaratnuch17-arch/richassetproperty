@@ -13,8 +13,11 @@ export const listingLeads = sqliteTable("listing_leads", {
   details: text("details"),
   source: text("source").notNull().default("website"),
   status: text("status").notNull().default("new"),
+  adminNotes: text("admin_notes"),
+  nextFollowUp: text("next_follow_up"),
   consent: integer("consent", { mode: "boolean" }).notNull().default(true),
   createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: text("updated_at"),
 });
 
 export const managedProperties = sqliteTable("managed_properties", {
