@@ -28,6 +28,7 @@ import {
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { useMemo, useState } from "react";
+import { ListingLeadForm } from "./ListingLeadForm";
 
 const PHONE = "061-359-1699";
 const LINE_ID = "richhouseagent99";
@@ -418,9 +419,9 @@ export function HomePage() {
           ))}
         </nav>
 
-        <a className="header-line" href={LINE_URL} target="_blank" rel="noreferrer">
-          <MessageCircle size={18} />
-          ปรึกษาฝากขาย
+        <a className="header-line" href="#listing-form">
+          <FileCheck2 size={18} />
+          ประเมินฝากขาย
         </a>
 
         <button
@@ -447,8 +448,8 @@ export function HomePage() {
                   {item.label}<ArrowRight size={17} />
                 </a>
               ))}
-              <a href={LINE_URL} target="_blank" rel="noreferrer">
-                ปรึกษาฝากขาย<ArrowRight size={17} />
+              <a href="#listing-form" onClick={() => setMenuOpen(false)}>
+                ประเมินฝากขาย<ArrowRight size={17} />
               </a>
             </motion.nav>
           )}
@@ -818,6 +819,29 @@ export function HomePage() {
         </div>
       </section>
 
+      <section className="listing-form-section" id="listing-form">
+        <FadeUp className="listing-form-intro">
+          <p className="section-kicker section-kicker--light">เริ่มฝากขายกับนุช</p>
+          <h2>ส่งข้อมูลเบื้องต้น<br />ใช้เวลาไม่กี่นาที</h2>
+          <p className="listing-form-lead">
+            กรอกเท่าที่ทราบก่อนก็ได้ นุชจะใช้ข้อมูลนี้ประเมินแนวทางเบื้องต้น
+            แล้วติดต่อกลับเพื่อคุยเรื่องราคา ความพร้อมของทรัพย์ และขั้นตอนถัดไป
+          </p>
+          <div className="listing-form-facts">
+            <div><span>01</span><p><strong>ส่งข้อมูลทรัพย์</strong><small>ไม่ต้องเตรียมเอกสารครบในครั้งแรก</small></p></div>
+            <div><span>02</span><p><strong>นุชติดต่อกลับ</strong><small>คุยรายละเอียดและประเมินแนวทางร่วมกัน</small></p></div>
+            <div><span>03</span><p><strong>ตัดสินใจเมื่อพร้อม</strong><small>การส่งแบบฟอร์มยังไม่ถือเป็นสัญญาฝากขาย</small></p></div>
+          </div>
+          <p className="listing-form-contact">
+            ต้องการคุยทันที? โทร <a href={`tel:${PHONE.replaceAll("-", "")}`}>{PHONE}</a>
+            {" "}หรือ LINE <a href={LINE_URL} target="_blank" rel="noreferrer">{LINE_ID}</a>
+          </p>
+        </FadeUp>
+        <FadeUp delay={0.08}>
+          <ListingLeadForm />
+        </FadeUp>
+      </section>
+
       <section className="section faq-section">
         <FadeUp className="faq-heading">
           <p className="section-kicker">ก่อนเริ่มคุยกัน</p>
@@ -856,6 +880,7 @@ export function HomePage() {
         <div className="footer-bottom">
           <p>© 2026 Rich Asset Property</p>
           <p>โทร {PHONE} · LINE {LINE_ID}</p>
+          <a href="/privacy">ประกาศความเป็นส่วนตัว</a>
           <a href="#top">กลับด้านบน <ArrowDown className="up-arrow" size={15} /></a>
         </div>
       </footer>

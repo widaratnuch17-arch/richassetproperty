@@ -1,0 +1,72 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+
+const PHONE = "061-359-1699";
+const LINE_ID = "richhouseagent99";
+const LINE_URL = "https://line.me/ti/p/~richhouseagent99";
+
+export const metadata: Metadata = {
+  title: "ประกาศความเป็นส่วนตัว",
+  description: "รายละเอียดการเก็บและใช้ข้อมูลจากแบบฟอร์มฝากขายของ Rich Asset Property",
+};
+
+export default function PrivacyPage() {
+  return (
+    <main className="privacy-page">
+      <div className="privacy-shell">
+        <Link className="privacy-back" href="/">← กลับหน้าเว็บไซต์</Link>
+        <p className="section-kicker">Rich Asset Property</p>
+        <h1>ประกาศความเป็นส่วนตัว</h1>
+        <p className="privacy-updated">ปรับปรุงล่าสุด 29 กรกฎาคม 2569</p>
+
+        <div className="privacy-content">
+          <section>
+            <h2>ข้อมูลที่เว็บไซต์เก็บ</h2>
+            <p>
+              เมื่อคุณส่งแบบฟอร์มฝากขาย เว็บไซต์อาจเก็บชื่อ เบอร์โทร LINE ID
+              ประเภททรัพย์ ทำเล ราคาที่ต้องการขาย ช่วงเวลาที่ต้องการขาย
+              และรายละเอียดทรัพย์ที่คุณระบุ
+            </p>
+          </section>
+
+          <section>
+            <h2>วัตถุประสงค์การใช้ข้อมูล</h2>
+            <p>
+              นุชใช้ข้อมูลเพื่อประเมินแนวทางฝากขาย ติดต่อกลับ
+              ให้คำปรึกษาเกี่ยวกับราคาและขั้นตอน และประสานงานบริการที่คุณร้องขอ
+              โดยจะไม่นำข้อมูลไปขายให้บุคคลอื่น
+            </p>
+          </section>
+
+          <section>
+            <h2>การจัดเก็บและการเปิดเผยข้อมูล</h2>
+            <p>
+              ข้อมูลถูกจัดเก็บในระบบของเว็บไซต์และเข้าถึงเท่าที่จำเป็นต่อการให้บริการ
+              อาจมีผู้ให้บริการระบบที่เกี่ยวข้องกับการจัดเก็บและดูแลเว็บไซต์
+              แต่จะใช้ข้อมูลเฉพาะเพื่อให้ระบบทำงานตามวัตถุประสงค์ข้างต้น
+            </p>
+          </section>
+
+          <section>
+            <h2>ระยะเวลาการเก็บข้อมูล</h2>
+            <p>
+              ข้อมูลจะถูกเก็บเท่าที่จำเป็นต่อการติดต่อและดำเนินงานเกี่ยวกับทรัพย์
+              หรือจนกว่าคุณจะขอให้ลบ หากไม่มีเหตุที่จำเป็นต้องเก็บไว้ตามกฎหมาย
+            </p>
+          </section>
+
+          <section>
+            <h2>สิทธิและช่องทางติดต่อ</h2>
+            <p>
+              หากต้องการสอบถาม ขอเข้าถึง แก้ไข หรือขอลบข้อมูลที่ส่งผ่านเว็บไซต์
+              สามารถติดต่อนุชได้ที่โทร{" "}
+              <a href={`tel:${PHONE.replaceAll("-", "")}`}>{PHONE}</a>
+              {" "}หรือ LINE{" "}
+              <a href={LINE_URL} target="_blank" rel="noreferrer">{LINE_ID}</a>
+            </p>
+          </section>
+        </div>
+      </div>
+    </main>
+  );
+}
