@@ -661,6 +661,35 @@ export function HomePage() {
         </motion.div>
       </section>
 
+      <section className="buyer-support-section">
+        <FadeUp className="buyer-support-copy">
+          <p className="section-kicker section-kicker--light">สำหรับผู้ซื้อ</p>
+          <h2>เห็นข้อมูลสำคัญ<br />ก่อนตัดสินใจ</h2>
+          <p>
+            บ้านที่ใช่ไม่ได้ดูแค่รูปสวย นุชช่วยให้คุณเห็นข้อมูลของตัวทรัพย์
+            ความพร้อมด้านสินเชื่อ และขั้นตอนที่ต้องวางแผนก่อนเดินหน้าซื้อ
+          </p>
+          <a className="buyer-support-cta" href={LINE_URL} target="_blank" rel="noreferrer">
+            <MessageCircle /> บอกนุชว่ากำลังมองหาบ้านแบบไหน
+          </a>
+        </FadeUp>
+
+        <div className="buyer-support-list">
+          <FadeUp delay={0.04}>
+            <span><Search /></span>
+            <p><strong>เช็กข้อมูลก่อนนัดชม</strong><small>ราคา ทำเล ขนาด และรายละเอียดสำคัญของทรัพย์</small></p>
+          </FadeUp>
+          <FadeUp delay={0.08}>
+            <span><ShieldCheck /></span>
+            <p><strong>วางแนวทางสินเชื่อ</strong><small>คุยความพร้อมเบื้องต้นก่อนตัดสินใจทำสัญญา</small></p>
+          </FadeUp>
+          <FadeUp delay={0.12}>
+            <span><FileCheck2 /></span>
+            <p><strong>เข้าใจขั้นตอนและเอกสาร</strong><small>เห็นภาพกระบวนการตั้งแต่เจรจาจนถึงวันโอน</small></p>
+          </FadeUp>
+        </div>
+      </section>
+
       <section className="about-section" id="about">
         <div className="about-image-wrap">
           <div className="about-image">

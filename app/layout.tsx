@@ -30,11 +30,16 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     description:
       "ซื้อ ขาย ฝาก เช่า อสังหาริมทรัพย์มือสอง นนทบุรี กรุงเทพฯ และปริมณฑล โทร 061-359-1699 LINE richhouseagent99",
+    alternates: {
+      canonical: "/",
+    },
     keywords: [
       "Rich Asset Property",
       "บ้านมือสอง",
+      "นายหน้าขายบ้าน",
       "ขายบ้านนนทบุรี",
       "ฝากขายบ้าน",
+      "รับฝากขายบ้านนนทบุรี",
       "บ้านราชพฤกษ์",
       "บ้านติวานนท์",
       "บ้านแจ้งวัฒนะ",
