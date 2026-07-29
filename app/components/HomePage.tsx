@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { ListingLeadForm } from "./ListingLeadForm";
 
@@ -375,6 +376,9 @@ function PropertyModal({
               เปิดแผนที่
             </a>
           </div>
+          <Link className="modal-page-link" href={`/properties/${property.id}`}>
+            เปิดหน้ารายละเอียดสำหรับแชร์ <ArrowRight />
+          </Link>
         </div>
       </motion.div>
     </motion.div>
@@ -648,13 +652,9 @@ export function HomePage() {
                     <span><Bath />{property.bathrooms}</span>
                     <span><CarFront />{property.parking}</span>
                   </div>
-                  <button
-                    type="button"
-                    className="text-link"
-                    onClick={() => setSelectedProperty(property)}
-                  >
+                  <Link className="text-link" href={`/properties/${property.id}`}>
                     ดูรายละเอียดทั้งหมด <ArrowRight size={17} />
-                  </button>
+                  </Link>
                 </div>
               </motion.article>
             ))}
