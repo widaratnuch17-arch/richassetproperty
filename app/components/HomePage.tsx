@@ -215,6 +215,7 @@ const faqs = [
 
 const navItems = [
   { label: "ทรัพย์เด่น", href: "#properties" },
+  { label: "ฝากขาย", href: "#sell" },
   { label: "บริการ", href: "#services" },
   { label: "ผลงาน", href: "#success" },
   { label: "เกี่ยวกับนุช", href: "#about" },
@@ -419,7 +420,7 @@ export function HomePage() {
 
         <a className="header-line" href={LINE_URL} target="_blank" rel="noreferrer">
           <MessageCircle size={18} />
-          LINE
+          ปรึกษาฝากขาย
         </a>
 
         <button
@@ -466,7 +467,7 @@ export function HomePage() {
           >
             <p className="eyebrow">
               <span />
-              บ้านมือสอง • นนทบุรี กรุงเทพฯ และปริมณฑล
+              บ้านมือสองที่เข้าใจทั้งคนซื้อและคนขาย
             </p>
             <h1>
               ซื้อ–ขายบ้าน
@@ -474,8 +475,8 @@ export function HomePage() {
               ในทุกขั้นตอน
             </h1>
             <p className="hero-lead">
-              นุชดูแลตั้งแต่ประเมินราคา ทำการตลาด คัดกรองผู้ซื้อ
-              สินเชื่อ เอกสาร จนถึงวันโอน
+              เลือกบ้านด้วยข้อมูลที่ชัดเจน หรือฝากขายกับนุชคนเดียวที่ดูแล
+              ตั้งแต่ประเมินราคา ทำการตลาด สินเชื่อ เอกสาร จนถึงวันโอน
             </p>
             <ContactButtons />
             <div className="hero-points" aria-label="จุดเด่นบริการ">
@@ -544,14 +545,55 @@ export function HomePage() {
         </div>
       </section>
 
+      <section className="audience-section" aria-labelledby="audience-title">
+        <FadeUp className="audience-heading">
+          <p className="section-kicker">เริ่มจากสิ่งที่คุณต้องการ</p>
+          <h2 id="audience-title">วันนี้คุณกำลัง<br />มองหาอะไร?</h2>
+        </FadeUp>
+
+        <div className="audience-grid">
+          <FadeUp className="audience-card audience-card--buyer" delay={0.05}>
+            <span className="audience-icon"><House /></span>
+            <p className="audience-label">สำหรับผู้ซื้อ</p>
+            <h3>กำลังหาซื้อบ้าน</h3>
+            <p>ดูทรัพย์ที่คัดข้อมูลสำคัญไว้ครบ แล้วทักนุชเพื่อนัดชมและคุยเรื่องสินเชื่อได้ทันที</p>
+            <a href="#properties">ดูทรัพย์ที่น่าสนใจ <ArrowRight /></a>
+          </FadeUp>
+          <FadeUp className="audience-card audience-card--seller" delay={0.1}>
+            <span className="audience-icon"><KeyRound /></span>
+            <p className="audience-label">สำหรับเจ้าของทรัพย์</p>
+            <h3>ต้องการขายบ้าน</h3>
+            <p>เริ่มจากประเมินแนวทาง ราคา และแผนการตลาด โดยไม่มีค่าใช้จ่ายล่วงหน้า</p>
+            <a href="#sell">ดูขั้นตอนฝากขาย <ArrowRight /></a>
+          </FadeUp>
+        </div>
+
+        <FadeUp className="expertise-band" delay={0.12}>
+          <div>
+            <p>ทำเลที่นุชโฟกัส</p>
+            <div className="area-chips" aria-label="พื้นที่ให้บริการหลัก">
+              <span>นนทบุรี</span>
+              <span>ราชพฤกษ์</span>
+              <span>ติวานนท์</span>
+              <span>แจ้งวัฒนะ</span>
+            </div>
+          </div>
+          <p className="expertise-note">
+            <LandPlot />
+            เชี่ยวชาญบ้านเดี่ยวราคาต่ำกว่า 10 ล้านบาท
+          </p>
+        </FadeUp>
+      </section>
+
       <section className="section properties-section" id="properties">
         <FadeUp className="section-heading-row">
           <div>
-            <p className="section-kicker">Selected properties</p>
+            <p className="section-kicker">ทรัพย์คัดสรร</p>
             <h2>ทรัพย์เด่น<br />ที่น่าสนใจ</h2>
           </div>
           <p className="section-intro">
-            คัดข้อมูลสำคัญให้เห็นง่าย พร้อมรายละเอียดจริงสำหรับตัดสินใจก่อนนัดชม
+            ทุกหลังแสดงข้อมูลสำคัญที่ตรวจสอบแล้วให้เห็นง่าย
+            หากสนใจสามารถทักนุชเพื่อเช็กสถานะ นัดชม และคุยเรื่องสินเชื่อได้เลย
           </p>
         </FadeUp>
 
@@ -635,11 +677,12 @@ export function HomePage() {
           </div>
         </div>
         <FadeUp className="about-copy">
-          <p className="section-kicker section-kicker--light">Meet Nuch</p>
+          <p className="section-kicker section-kicker--light">รู้จักนุช</p>
           <h2>ดูแลเอง<br />ทุกเคส</h2>
           <p className="about-lead">
-            เพราะบ้านหนึ่งหลังไม่ใช่แค่ประกาศขาย แต่เป็นทรัพย์สินสำคัญ
-            นุชจึงดูแลทั้งราคา เอกสาร ค่าใช้จ่าย ผู้ซื้อและสินเชื่ออย่างชัดเจน
+            นุชเชื่อว่าการซื้อ–ขายบ้านต้องเริ่มจากข้อมูลที่ตรงไปตรงมา
+            จึงดูแลเองทุกเคส ตั้งแต่ราคา การตลาด ผู้ซื้อ สินเชื่อ เอกสาร
+            และค่าใช้จ่าย เพื่อให้คุณตัดสินใจได้อย่างมั่นใจ
           </p>
           <div className="about-values">
             <div><ShieldCheck /><span><strong>ตรงไปตรงมา</strong><small>ข้อมูลชัดเจน ไม่กล่าวอ้างเกินจริง</small></span></div>
@@ -652,7 +695,7 @@ export function HomePage() {
 
       <section className="section services-section" id="services">
         <FadeUp className="services-title">
-          <p className="section-kicker">How we work</p>
+          <p className="section-kicker">ขั้นตอนการทำงาน</p>
           <h2>หนึ่งคนดูแล<br />ครบทุกขั้นตอน</h2>
         </FadeUp>
         <div className="service-list">
@@ -687,7 +730,7 @@ export function HomePage() {
       <section className="success-section" id="success">
         <div className="success-head">
           <FadeUp>
-            <p className="section-kicker section-kicker--light">Real moments</p>
+            <p className="section-kicker section-kicker--light">ผลงานจริง</p>
             <h2>จากวันเริ่มขาย<br />ถึงวันส่งมอบ</h2>
           </FadeUp>
           <FadeUp delay={0.08}>
@@ -724,20 +767,23 @@ export function HomePage() {
       <section className="seller-section" id="sell">
         <div className="seller-card">
           <FadeUp>
-            <p className="section-kicker">For property owners</p>
+            <p className="section-kicker">สำหรับเจ้าของทรัพย์</p>
             <h2>มีบ้านต้องการขาย<br />แต่ไม่รู้เริ่มตรงไหน?</h2>
             <p className="seller-lead">
               ส่งข้อมูลทรัพย์ให้นุชประเมินแนวทางเบื้องต้น
               พร้อมคุยเรื่องราคา แผนการตลาดและขั้นตอนอย่างตรงไปตรงมา
             </p>
+            <div className="seller-assurance">
+              <Check /> ไม่มีค่าใช้จ่ายการตลาดล่วงหน้า • ค่าคอมมิชชัน 3% เมื่อขายสำเร็จ
+            </div>
           </FadeUp>
           <FadeUp className="seller-offer" delay={0.08}>
-            <div><span>01</span><p><strong>ไม่มีค่าใช้จ่ายล่วงหน้า</strong><small>เริ่มทำการตลาดโดยเจ้าของไม่ต้องสำรองจ่าย</small></p></div>
-            <div><span>02</span><p><strong>จ่ายเมื่อขายสำเร็จ</strong><small>ค่าคอมมิชชัน 3% จากราคาขายจริง</small></p></div>
-            <div><span>03</span><p><strong>นุชดูแลครบ</strong><small>ราคา สื่อ ผู้ซื้อ สินเชื่อ เอกสาร และวันโอน</small></p></div>
+            <div><span>01</span><p><strong>ส่งข้อมูลเบื้องต้น</strong><small>ทำเล ประเภททรัพย์ ขนาด ราคาที่ต้องการ และรูปถ่าย</small></p></div>
+            <div><span>02</span><p><strong>คุยราคาและวางแผน</strong><small>ประเมินแนวทางการขาย ค่าใช้จ่าย และแผนการตลาดให้ชัดเจน</small></p></div>
+            <div><span>03</span><p><strong>เริ่มทำตลาดเมื่อพร้อม</strong><small>นุชดูแลสื่อ ผู้ซื้อ สินเชื่อ เอกสาร และวันโอนให้ครบ</small></p></div>
             <ContactButtons />
             <p className="seller-note">
-              เตรียมเพียงทำเล ประเภททรัพย์ ขนาด ราคาที่ต้องการขายและรูปเบื้องต้น
+              ไม่ต้องกรอกแบบฟอร์มยาว เริ่มจากส่งข้อมูลเบื้องต้นทาง LINE ได้เลย
             </p>
           </FadeUp>
         </div>
@@ -745,7 +791,7 @@ export function HomePage() {
 
       <section className="section faq-section">
         <FadeUp className="faq-heading">
-          <p className="section-kicker">Before we talk</p>
+          <p className="section-kicker">ก่อนเริ่มคุยกัน</p>
           <h2>คำถามที่พบบ่อย</h2>
         </FadeUp>
         <div className="faq-list">
