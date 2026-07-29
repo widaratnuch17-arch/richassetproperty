@@ -30,6 +30,11 @@ const worker = {
     const url = new URL(request.url);
 
     if (url.pathname === "/_vinext/image") {
+      const source = url.searchParams.get("url");
+      if (source?.startsWith("/") && !source.startsWith("//")) {
+        return Response.redirect(new URL(source, request.url), 302);
+      }
+
       const allowedWidths = [...DEFAULT_DEVICE_SIZES, ...DEFAULT_IMAGE_SIZES];
       return handleImageOptimization(request, {
         fetchAsset: (path) => env.ASSETS.fetch(new Request(new URL(path, request.url))),
