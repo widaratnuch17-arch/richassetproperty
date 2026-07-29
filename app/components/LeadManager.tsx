@@ -27,7 +27,18 @@ const statusLabels: Record<ListingLeadStatus, string> = {
   closed: "ยังไม่ดำเนินการ",
 };
 
-type LeadFilter = "all" | ListingLeadStatus;
+type LeadFilter = "all" | "attention" | ListingLeadStatus;
+
+function bangkokToday() {
+  const parts = new Intl.DateTimeFormat("en", {
+    timeZone: "Asia/Bangkok",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(new Date());
+  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+  return `${values.year}-${values.month}-${values.day}`;
+}
 
 function parseDatabaseDate(value: string) {
   const normalized = value.includes("T")
@@ -73,15 +84,22 @@ function leadSummary(lead: ListingLead) {
     .join("\n");
 }
 
-export function LeadManager({ initialLeads }: { initialLeads: ListingLead[] }) {
+export function LeadManager({
+  initialLeads,
+  initialFilter = "all",
+}: {
+  initialLeads: ListingLead[];
+  initialFilter?: LeadFilter;
+}) {
   const [leads, setLeads] = useState(initialLeads);
-  const [filter, setFilter] = useState<LeadFilter>("all");
+  const [filter, setFilter] = useState<LeadFilter>(initialFilter);
   const [editing, setEditing] = useState<ListingLead | null>(null);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [copiedId, setCopiedId] = useState<number | null>(null);
   const [currentTime] = useState(() => Date.now());
+  const [today] = useState(bangkokToday);
 
   const counts = useMemo(
     () => ({
@@ -96,8 +114,19 @@ export function LeadManager({ initialLeads }: { initialLeads: ListingLead[] }) {
   );
 
   const visibleLeads = useMemo(
-    () => (filter === "all" ? leads : leads.filter((lead) => lead.status === filter)),
-    [filter, leads],
+    () => {
+      if (filter === "all") return leads;
+      if (filter === "attention") {
+        return leads.filter(
+          (lead) =>
+            !["won", "closed"].includes(lead.status) &&
+            (lead.status === "new" ||
+              Boolean(lead.nextFollowUp && lead.nextFollowUp.slice(0, 10) <= today)),
+        );
+      }
+      return leads.filter((lead) => lead.status === filter);
+    },
+    [filter, leads, today],
   );
 
   function startEdit(lead: ListingLead) {
@@ -177,6 +206,7 @@ export function LeadManager({ initialLeads }: { initialLeads: ListingLead[] }) {
             onChange={(event) => setFilter(event.target.value as LeadFilter)}
           >
             <option value="all">ทั้งหมด</option>
+            <option value="attention">ต้องติดตามตอนนี้</option>
             {Object.entries(statusLabels).map(([value, label]) => (
               <option value={value} key={value}>{label}</option>
             ))}

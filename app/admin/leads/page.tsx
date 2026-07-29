@@ -12,9 +12,15 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default async function AdminLeadsPage() {
+type AdminLeadsPageProps = {
+  searchParams: Promise<{ filter?: string }>;
+};
+
+export default async function AdminLeadsPage({ searchParams }: AdminLeadsPageProps) {
   const user = await requireOwner("/admin/leads");
   const leads = await getListingLeads();
+  const { filter } = await searchParams;
+  const initialFilter = filter === "attention" ? "attention" : "all";
 
   return (
     <main className="admin-page">
@@ -25,12 +31,13 @@ export default async function AdminLeadsPage() {
           <p>เข้าสู่ระบบในชื่อ {user.displayName}</p>
         </div>
         <nav>
+          <Link href="/admin">ภาพรวมงาน</Link>
           <Link href="/admin/properties">จัดการทรัพย์</Link>
           <Link href="/">ดูเว็บไซต์</Link>
           <a href={chatGPTSignOutPath("/")}>ออกจากระบบ</a>
         </nav>
       </header>
-      <LeadManager initialLeads={leads} />
+      <LeadManager initialLeads={leads} initialFilter={initialFilter} />
     </main>
   );
 }

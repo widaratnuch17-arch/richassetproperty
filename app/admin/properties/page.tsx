@@ -25,6 +25,7 @@ export default async function AdminPropertiesPage() {
           <p>เข้าสู่ระบบในชื่อ {user.displayName}</p>
         </div>
         <nav>
+          <Link href="/admin">ภาพรวมงาน</Link>
           <Link href="/admin/leads">ลูกค้าฝากขาย</Link>
           <Link href="/">ดูเว็บไซต์</Link>
           <a href={chatGPTSignOutPath("/")}>ออกจากระบบ</a>
