@@ -1,9 +1,9 @@
 import type { MetadataRoute } from "next";
-import { propertyDetails } from "./data/properties";
+import { getManagedProperties } from "../db/managed-properties";
 
 const SITE_URL = "https://rich-asset-property.widaratnuch17.chatgpt.site";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages: MetadataRoute.Sitemap = [
     {
       url: SITE_URL,
@@ -19,7 +19,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ];
 
-  const propertyPages: MetadataRoute.Sitemap = propertyDetails.map((property) => ({
+  const properties = await getManagedProperties();
+  const propertyPages: MetadataRoute.Sitemap = properties.map((property) => ({
     url: `${SITE_URL}/properties/${property.id}`,
     lastModified: new Date(),
     changeFrequency: "weekly",

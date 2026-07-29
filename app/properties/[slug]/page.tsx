@@ -17,7 +17,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PropertyShareButton } from "../../components/PropertyShareButton";
-import { getProperty, propertyDetails } from "../../data/properties";
+import { getManagedProperties, getManagedProperty } from "../../../db/managed-properties";
 
 const PHONE = "061-359-1699";
 const LINE_URL = "https://line.me/ti/p/~richhouseagent99";
@@ -27,14 +27,16 @@ type PropertyPageProps = {
 };
 
 export function generateStaticParams() {
-  return propertyDetails.map((property) => ({ slug: property.id }));
+  return [];
 }
+
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: PropertyPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const property = getProperty(slug);
+  const property = await getManagedProperty(slug);
 
-  if (!property) return {};
+  if (!property || property.status === "hidden") return {};
 
   return {
     title: `${property.title} | ${property.price}`,
@@ -54,11 +56,11 @@ export async function generateMetadata({ params }: PropertyPageProps): Promise<M
 
 export default async function PropertyPage({ params }: PropertyPageProps) {
   const { slug } = await params;
-  const property = getProperty(slug);
+  const property = await getManagedProperty(slug);
 
-  if (!property) notFound();
+  if (!property || property.status === "hidden") notFound();
 
-  const relatedProperties = propertyDetails.filter((item) => item.id !== property.id);
+  const relatedProperties = (await getManagedProperties()).filter((item) => item.id !== property.id);
 
   return (
     <main className="property-detail-page">
@@ -75,7 +77,9 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
       <section className="property-detail-hero">
         <div className="property-detail-title">
           <div>
-            <p className="section-kicker">{property.type}</p>
+            <p className="section-kicker">
+              {property.type} · {property.status === "sold" ? "ขายแล้ว" : property.status === "reserved" ? "ติดจอง" : "พร้อมขาย"}
+            </p>
             <h1>{property.title}</h1>
             <p className="property-detail-location"><MapPin /> {property.location}</p>
           </div>

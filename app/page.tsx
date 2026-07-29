@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import { HomePage } from "./components/HomePage";
+import { getManagedProperties } from "../db/managed-properties";
 
 const SITE_URL = "https://rich-asset-property.widaratnuch17.chatgpt.site";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Rich Asset Property | ซื้อ ขาย ฝาก เช่า อสังหาฯ",
@@ -9,7 +12,8 @@ export const metadata: Metadata = {
     "บ้านมือสอง นนทบุรี กรุงเทพฯ และปริมณฑล ดูแลโดยนุช ตั้งแต่ประเมินราคา ทำการตลาด สินเชื่อ เอกสาร จนถึงวันโอน",
 };
 
-export default function Home() {
+export default async function Home() {
+  const properties = await getManagedProperties();
   const schema = {
     "@context": "https://schema.org",
     "@graph": [
@@ -63,7 +67,7 @@ export default function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
       />
-      <HomePage />
+      <HomePage initialProperties={properties} />
     </>
   );
 }

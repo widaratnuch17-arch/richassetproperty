@@ -37,7 +37,7 @@ const LINE_URL = "https://line.me/ti/p/~richhouseagent99";
 
 type Property = {
   id: string;
-  type: "บ้านแฝด" | "ทาวน์โฮม";
+  type: string;
   title: string;
   location: string;
   price: string;
@@ -51,7 +51,15 @@ type Property = {
   nearby: string[];
   map: string;
   images: string[];
+  status?: "active" | "reserved" | "sold" | "hidden";
 };
+
+const propertyStatusLabels = {
+  active: "พร้อมขาย",
+  reserved: "ติดจอง",
+  sold: "ขายแล้ว",
+  hidden: "ซ่อนรายการ",
+} as const;
 
 const properties: Property[] = [
   {
@@ -332,7 +340,7 @@ function PropertyModal({
           <div className="property-kicker">
             <span>{property.type}</span>
             <span className="dot" />
-            <span>ขาย</span>
+            <span>{propertyStatusLabels[property.status ?? "active"]}</span>
           </div>
           <h2>{property.title}</h2>
           <p className="location-line">
@@ -385,7 +393,7 @@ function PropertyModal({
   );
 }
 
-export function HomePage() {
+export function HomePage({ initialProperties = properties }: { initialProperties?: Property[] }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [filter, setFilter] = useState<"ทั้งหมด" | Property["type"]>("ทั้งหมด");
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
@@ -393,9 +401,9 @@ export function HomePage() {
   const filteredProperties = useMemo(
     () =>
       filter === "ทั้งหมด"
-        ? properties
-        : properties.filter((property) => property.type === filter),
-    [filter],
+        ? initialProperties
+        : initialProperties.filter((property) => property.type === filter),
+    [filter, initialProperties],
   );
 
   return (
@@ -640,6 +648,11 @@ export function HomePage() {
                     sizes="(max-width: 760px) 92vw, (max-width: 1100px) 44vw, 31vw"
                   />
                   <span className="property-type">{property.type}</span>
+                  {property.status && property.status !== "active" && (
+                    <span className="property-status" data-status={property.status}>
+                      {propertyStatusLabels[property.status]}
+                    </span>
+                  )}
                   <span className="image-arrow"><ArrowRight /></span>
                 </button>
                 <div className="property-body">

@@ -1,0 +1,20 @@
+CREATE TABLE `managed_properties` (
+	`id` text PRIMARY KEY NOT NULL,
+	`type` text NOT NULL,
+	`title` text NOT NULL,
+	`location` text NOT NULL,
+	`price` text NOT NULL,
+	`land` text NOT NULL,
+	`usable_area` text NOT NULL,
+	`bedrooms` integer DEFAULT 0 NOT NULL,
+	`bathrooms` integer DEFAULT 0 NOT NULL,
+	`parking` integer DEFAULT 0 NOT NULL,
+	`summary` text NOT NULL,
+	`highlights` text DEFAULT '[]' NOT NULL,
+	`nearby` text DEFAULT '[]' NOT NULL,
+	`map_url` text DEFAULT '' NOT NULL,
+	`images` text DEFAULT '[]' NOT NULL,
+	`status` text DEFAULT 'active' NOT NULL,
+	`created_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	`updated_at` text DEFAULT CURRENT_TIMESTAMP NOT NULL
+);

@@ -1,6 +1,8 @@
+export type PropertyStatus = "active" | "reserved" | "sold" | "hidden";
+
 export type Property = {
   id: string;
-  type: "บ้านแฝด" | "ทาวน์โฮม";
+  type: string;
   title: string;
   location: string;
   price: string;
@@ -14,6 +16,7 @@ export type Property = {
   nearby: string[];
   map: string;
   images: string[];
+  status?: PropertyStatus;
 };
 
 export const propertyDetails: Property[] = [
@@ -49,6 +52,7 @@ export const propertyDetails: Property[] = [
       "/assets/property-baanfah-2.jpg",
       "/assets/property-baanfah-3.jpg",
     ],
+    status: "active",
   },
   {
     id: "mirth",
@@ -82,6 +86,7 @@ export const propertyDetails: Property[] = [
       "/assets/property-mirth-2.png",
       "/assets/property-mirth-3.png",
     ],
+    status: "active",
   },
   {
     id: "jgrand",
@@ -115,6 +120,7 @@ export const propertyDetails: Property[] = [
       "/assets/property-jgrand-2.jpg",
       "/assets/property-jgrand-3.jpg",
     ],
+    status: "active",
   },
 ];
 

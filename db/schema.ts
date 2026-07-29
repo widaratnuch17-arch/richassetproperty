@@ -16,3 +16,24 @@ export const listingLeads = sqliteTable("listing_leads", {
   consent: integer("consent", { mode: "boolean" }).notNull().default(true),
   createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
 });
+
+export const managedProperties = sqliteTable("managed_properties", {
+  id: text("id").primaryKey(),
+  type: text("type").notNull(),
+  title: text("title").notNull(),
+  location: text("location").notNull(),
+  price: text("price").notNull(),
+  land: text("land").notNull(),
+  usableArea: text("usable_area").notNull(),
+  bedrooms: integer("bedrooms").notNull().default(0),
+  bathrooms: integer("bathrooms").notNull().default(0),
+  parking: integer("parking").notNull().default(0),
+  summary: text("summary").notNull(),
+  highlights: text("highlights").notNull().default("[]"),
+  nearby: text("nearby").notNull().default("[]"),
+  mapUrl: text("map_url").notNull().default(""),
+  images: text("images").notNull().default("[]"),
+  status: text("status").notNull().default("active"),
+  createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+});
