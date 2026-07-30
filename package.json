@@ -11,7 +11,9 @@
     "start": "vinext start",
     "test": "pnpm run build",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
-    "db:generate": "drizzle-kit generate"
+    "db:generate": "drizzle-kit generate",
+    "db:migrate:cloudflare": "wrangler d1 migrations apply rich-asset-property-db --remote --config wrangler.jsonc",
+    "deploy:cloudflare": "pnpm run build && wrangler deploy --config wrangler.jsonc"
   },
   "dependencies": {
     "drizzle-orm": "0.45.2",

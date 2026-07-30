@@ -16,7 +16,19 @@ npm run dev
 npm run build
 ```
 
-This starter does not use `wrangler.jsonc`.
+## Cloudflare deployment
+
+The production Worker is configured in `wrangler.jsonc`.
+
+```bash
+pnpm run db:migrate:cloudflare
+pnpm run deploy:cloudflare
+```
+
+The public site uses Cloudflare Workers and D1. Enable R2 in the target
+Cloudflare account before adding the `PROPERTY_IMAGES` bucket binding. Until
+then, the existing static property images continue to work and new admin image
+uploads return a clear unavailable message.
 
 ## Included Shape
 

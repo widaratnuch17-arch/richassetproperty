@@ -12,6 +12,13 @@ export async function POST(request: Request) {
     return Response.json({ error: "ไม่มีสิทธิ์เข้าถึง" }, { status: 403 });
   }
 
+  if (!env.PROPERTY_IMAGES) {
+    return Response.json(
+      { error: "ยังไม่เปิดระบบพื้นที่เก็บรูป R2 สำหรับเว็บไซต์นี้" },
+      { status: 503 },
+    );
+  }
+
   const formData = await request.formData();
   const file = formData.get("file");
   if (!(file instanceof File)) {

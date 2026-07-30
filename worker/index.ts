@@ -5,7 +5,7 @@ import handler from "vinext/server/app-router-entry";
 interface Env {
   ASSETS: Fetcher;
   DB: D1Database;
-  PROPERTY_IMAGES: R2Bucket;
+  PROPERTY_IMAGES?: R2Bucket;
   IMAGES: {
     input(stream: ReadableStream): {
       transform(options: Record<string, unknown>): {
@@ -31,6 +31,7 @@ const worker = {
     const url = new URL(request.url);
 
     if (url.pathname.startsWith("/property-images/")) {
+      if (!env.PROPERTY_IMAGES) return new Response("Not found", { status: 404 });
       const key = decodeURIComponent(url.pathname.slice("/property-images/".length));
       if (!key || key.includes("..")) return new Response("Not found", { status: 404 });
       const object = await env.PROPERTY_IMAGES.get(key);
