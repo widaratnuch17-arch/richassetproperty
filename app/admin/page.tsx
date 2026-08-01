@@ -11,8 +11,7 @@ import {
   UserRoundPlus,
 } from "lucide-react";
 import Link from "next/link";
-import { requireOwner } from "../admin-auth";
-import { chatGPTSignOutPath } from "../chatgpt-auth";
+import { adminSignOutPath, requireOwner } from "../admin-auth";
 import { getListingLeads, type ListingLead } from "../../db/listing-leads";
 import { getManagedProperties } from "../../db/managed-properties";
 
@@ -99,7 +98,7 @@ export default async function AdminDashboardPage() {
           <Link href="/admin/leads">ลูกค้าฝากขาย</Link>
           <Link href="/admin/properties">จัดการทรัพย์</Link>
           <Link href="/">ดูเว็บไซต์</Link>
-          <a href={chatGPTSignOutPath("/")}>ออกจากระบบ</a>
+          <a href={adminSignOutPath(user)}>ออกจากระบบ</a>
         </nav>
       </header>
 

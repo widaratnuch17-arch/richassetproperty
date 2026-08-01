@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AdminPropertyManager } from "../../components/AdminPropertyManager";
-import { requireOwner } from "../../admin-auth";
-import { chatGPTSignOutPath } from "../../chatgpt-auth";
+import { adminSignOutPath, requireOwner } from "../../admin-auth";
 import { getManagedProperties } from "../../../db/managed-properties";
 
 export const dynamic = "force-dynamic";
@@ -28,7 +27,7 @@ export default async function AdminPropertiesPage() {
           <Link href="/admin">ภาพรวมงาน</Link>
           <Link href="/admin/leads">ลูกค้าฝากขาย</Link>
           <Link href="/">ดูเว็บไซต์</Link>
-          <a href={chatGPTSignOutPath("/")}>ออกจากระบบ</a>
+          <a href={adminSignOutPath(user)}>ออกจากระบบ</a>
         </nav>
       </header>
       <AdminPropertyManager initialProperties={properties} />

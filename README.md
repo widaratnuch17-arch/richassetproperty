@@ -30,6 +30,19 @@ Cloudflare account before adding the `PROPERTY_IMAGES` bucket binding. Until
 then, the existing static property images continue to work and new admin image
 uploads return a clear unavailable message.
 
+### Admin access on Cloudflare
+
+Protect `/admin*` and `/api/admin*` with a Cloudflare Access application. Add
+these Worker variables after creating the Access application:
+
+- `CF_ACCESS_TEAM_DOMAIN`: `https://<team-name>.cloudflareaccess.com`
+- `CF_ACCESS_AUD`: the Application Audience (AUD) tag
+
+The application validates the Access JWT signature, issuer, and audience before
+trusting the signed-in email. The owner email remains restricted to
+`widaratnuch17@gmail.com`. ChatGPT authentication headers are accepted only on
+`.chatgpt.site`, never on the public `workers.dev` deployment.
+
 ## Included Shape
 
 - edit site code under `app/`

@@ -20,6 +20,21 @@ interface ExecutionContext {
   passThroughOnException(): void;
 }
 
+const chatGPTAuthHeaders = [
+  "oai-authenticated-user-email",
+  "oai-authenticated-user-full-name",
+  "oai-authenticated-user-full-name-encoding",
+];
+
+function stripUntrustedChatGPTAuthHeaders(request: Request): Request {
+  const hostname = new URL(request.url).hostname.toLowerCase();
+  if (hostname.endsWith(".chatgpt.site")) return request;
+
+  const headers = new Headers(request.headers);
+  for (const name of chatGPTAuthHeaders) headers.delete(name);
+  return new Request(request, { headers });
+}
+
 // Image security config. SVG sources with .svg extension auto-skip the
 // optimization endpoint on the client side (served directly, no proxy).
 // To route SVGs through the optimizer (with security headers), set
@@ -28,6 +43,7 @@ interface ExecutionContext {
 
 const worker = {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+    request = stripUntrustedChatGPTAuthHeaders(request);
     const url = new URL(request.url);
 
     if (url.pathname.startsWith("/property-images/")) {

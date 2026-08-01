@@ -18,6 +18,8 @@ const CALLBACK_PATH = "/callback";
 
 export async function getChatGPTUser(): Promise<ChatGPTUser | null> {
   const requestHeaders = await headers();
+  if (!isTrustedChatGPTHost(requestHeaders.get("host"))) return null;
+
   const email = requestHeaders.get(USER_EMAIL_HEADER);
   if (!email) return null;
 
@@ -33,6 +35,10 @@ export async function getChatGPTUser(): Promise<ChatGPTUser | null> {
     email,
     fullName,
   };
+}
+
+export async function isChatGPTHost(): Promise<boolean> {
+  return isTrustedChatGPTHost((await headers()).get("host"));
 }
 
 export async function requireChatGPTUser(
@@ -83,4 +89,9 @@ function safeDecodeURIComponent(value: string): string | null {
   } catch {
     return null;
   }
+}
+
+function isTrustedChatGPTHost(value: string | null): boolean {
+  const hostname = value?.split(":", 1)[0].toLowerCase();
+  return Boolean(hostname?.endsWith(".chatgpt.site"));
 }

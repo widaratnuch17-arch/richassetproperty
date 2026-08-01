@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { requireOwner } from "../../admin-auth";
-import { chatGPTSignOutPath } from "../../chatgpt-auth";
+import { adminSignOutPath, requireOwner } from "../../admin-auth";
 import { LeadManager } from "../../components/LeadManager";
 import { getListingLeads } from "../../../db/listing-leads";
 
@@ -34,7 +33,7 @@ export default async function AdminLeadsPage({ searchParams }: AdminLeadsPagePro
           <Link href="/admin">ภาพรวมงาน</Link>
           <Link href="/admin/properties">จัดการทรัพย์</Link>
           <Link href="/">ดูเว็บไซต์</Link>
-          <a href={chatGPTSignOutPath("/")}>ออกจากระบบ</a>
+          <a href={adminSignOutPath(user)}>ออกจากระบบ</a>
         </nav>
       </header>
       <LeadManager initialLeads={leads} initialFilter={initialFilter} />
