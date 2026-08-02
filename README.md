@@ -25,15 +25,22 @@ pnpm run db:migrate:cloudflare
 pnpm run deploy:cloudflare
 ```
 
-The public site uses Cloudflare Workers and D1. Enable R2 in the target
-Cloudflare account before adding the `PROPERTY_IMAGES` bucket binding. Until
-then, the existing static property images continue to work and new admin image
-uploads return a clear unavailable message.
+The public site uses Cloudflare Workers and D1. The current no-card deployment
+intentionally does not enable an R2 subscription. Property images live in
+`public/assets` and are published with the Worker; new admin image uploads
+return a clear unavailable message. R2 can be added later with a
+`PROPERTY_IMAGES` bucket binding if the owner chooses usage-based billing.
 
 ### Admin access on Cloudflare
 
-Protect `/admin*` and `/api/admin*` with a Cloudflare Access application. Add
-these Worker variables after creating the Access application:
+The current no-card deployment uses a password session with the
+`ADMIN_PASSWORD` and `ADMIN_SESSION_SECRET` secrets. The password is stored only
+in Cloudflare's encrypted, write-only secret store; sessions are signed with
+HMAC-SHA256, cookies are HttpOnly/Secure/SameSite=Strict, and failed attempts
+are limited through D1.
+
+Cloudflare Access remains an optional alternative. To use it, protect
+`/admin*` and `/api/admin*` and add these Worker variables:
 
 - `CF_ACCESS_TEAM_DOMAIN`: `https://<team-name>.cloudflareaccess.com`
 - `CF_ACCESS_AUD`: the Application Audience (AUD) tag

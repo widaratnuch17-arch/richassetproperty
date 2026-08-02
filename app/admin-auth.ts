@@ -9,6 +9,7 @@ import {
   getChatGPTUser,
   isChatGPTHost,
 } from "./chatgpt-auth";
+import { getPasswordUser } from "./password-auth";
 
 export const OWNER_EMAIL = "widaratnuch17@gmail.com";
 
@@ -16,7 +17,7 @@ export type AdminUser = {
   displayName: string;
   email: string;
   fullName: string | null;
-  provider: "chatgpt" | "cloudflare-access";
+  provider: "chatgpt" | "cloudflare-access" | "password";
 };
 
 export async function requireOwner(returnTo: string): Promise<AdminUser> {
@@ -25,7 +26,7 @@ export async function requireOwner(returnTo: string): Promise<AdminUser> {
   if (user) notFound();
 
   if (await isChatGPTHost()) redirect(chatGPTSignInPath(returnTo));
-  notFound();
+  redirect(`/admin/login?return_to=${encodeURIComponent(returnTo)}`);
 }
 
 export async function isOwner() {
@@ -34,9 +35,9 @@ export async function isOwner() {
 }
 
 export function adminSignOutPath(user: AdminUser): string {
-  return user.provider === "cloudflare-access"
-    ? cloudflareAccessSignOutPath()
-    : chatGPTSignOutPath("/");
+  if (user.provider === "cloudflare-access") return cloudflareAccessSignOutPath();
+  if (user.provider === "password") return "/admin/logout";
+  return chatGPTSignOutPath("/");
 }
 
 async function getAdminUser(): Promise<AdminUser | null> {
@@ -46,5 +47,8 @@ async function getAdminUser(): Promise<AdminUser | null> {
   }
 
   const chatGPTUser = await getChatGPTUser();
-  return chatGPTUser ? { ...chatGPTUser, provider: "chatgpt" } : null;
+  if (chatGPTUser) return { ...chatGPTUser, provider: "chatgpt" };
+
+  const passwordUser = await getPasswordUser();
+  return passwordUser ? { ...passwordUser, provider: "password" } : null;
 }

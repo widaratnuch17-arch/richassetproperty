@@ -40,3 +40,10 @@ export const managedProperties = sqliteTable("managed_properties", {
   createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
   updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
 });
+
+export const adminLoginAttempts = sqliteTable("admin_login_attempts", {
+  key: text("key").primaryKey(),
+  attempts: integer("attempts").notNull().default(0),
+  windowStartedAt: integer("window_started_at").notNull(),
+  blockedUntil: integer("blocked_until"),
+});
