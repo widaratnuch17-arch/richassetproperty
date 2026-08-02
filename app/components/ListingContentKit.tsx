@@ -2,6 +2,7 @@
 
 import {
   Check,
+  CalendarPlus,
   Copy,
   ExternalLink,
   FileText,
@@ -81,6 +82,7 @@ export function ListingContentKit({
     description: string;
     icon: typeof FileText;
     text: string;
+    scheduleChannel: string;
   }> = [
     {
       key: "facebook",
@@ -88,6 +90,7 @@ export function ListingContentKit({
       description: "ข้อความฉบับเต็ม มีรายละเอียด จุดเด่น และช่องทางติดต่อ",
       icon: FileText,
       text: content.facebook,
+      scheduleChannel: "facebook",
     },
     {
       key: "shortCaption",
@@ -95,6 +98,7 @@ export function ListingContentKit({
       description: "เหมาะสำหรับ TikTok, Reels, Lemon8 และ LINE VOOM",
       icon: Smartphone,
       text: content.shortCaption,
+      scheduleChannel: "tiktok",
     },
     {
       key: "portal",
@@ -102,6 +106,7 @@ export function ListingContentKit({
       description: "รูปแบบอ่านง่ายสำหรับคัดลอกไปวางในเว็บไซต์อสังหาฯ",
       icon: Globe2,
       text: content.portal,
+      scheduleChannel: "property_portal",
     },
   ];
 
@@ -163,14 +168,21 @@ export function ListingContentKit({
               <textarea readOnly value={panel.text} aria-label={panel.title} />
               <footer>
                 <small>{panel.text.length.toLocaleString("th-TH")} ตัวอักษร</small>
-                <button
-                  type="button"
-                  onClick={() => copyText(panel.key)}
-                  disabled={!canPublish}
-                >
-                  {copied === panel.key ? <Check /> : <Copy />}
-                  {copied === panel.key ? "คัดลอกแล้ว" : "คัดลอกข้อความ"}
-                </button>
+                <div>
+                  {canPublish && (
+                    <Link href={`/admin/schedule?property=${property.id}&channel=${panel.scheduleChannel}`}>
+                      <CalendarPlus /> วางแผนโพสต์
+                    </Link>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => copyText(panel.key)}
+                    disabled={!canPublish}
+                  >
+                    {copied === panel.key ? <Check /> : <Copy />}
+                    {copied === panel.key ? "คัดลอกแล้ว" : "คัดลอกข้อความ"}
+                  </button>
+                </div>
               </footer>
             </article>
           );

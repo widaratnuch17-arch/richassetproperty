@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { index, integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
 export const listingLeads = sqliteTable("listing_leads", {
   id: integer("id").primaryKey({ autoIncrement: true }),
@@ -47,3 +47,30 @@ export const adminLoginAttempts = sqliteTable("admin_login_attempts", {
   windowStartedAt: integer("window_started_at").notNull(),
   blockedUntil: integer("blocked_until"),
 });
+
+export const contentSchedule = sqliteTable(
+  "content_schedule",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    propertyId: text("property_id")
+      .notNull()
+      .references(() => managedProperties.id, { onDelete: "cascade" }),
+    channel: text("channel").notNull(),
+    contentType: text("content_type").notNull(),
+    destination: text("destination"),
+    scheduledFor: text("scheduled_for").notNull(),
+    status: text("status").notNull().default("planned"),
+    postUrl: text("post_url"),
+    notes: text("notes"),
+    postedAt: text("posted_at"),
+    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [
+    index("idx_content_schedule_status_scheduled_for").on(
+      table.status,
+      table.scheduledFor,
+    ),
+    index("idx_content_schedule_property_id").on(table.propertyId),
+  ],
+);

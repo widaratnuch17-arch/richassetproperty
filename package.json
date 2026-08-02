@@ -10,7 +10,7 @@
     "build": "vinext build",
     "start": "vinext start",
     "test": "pnpm run build",
-    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
+    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next --ignore-pattern .wrangler",
     "db:generate": "drizzle-kit generate",
     "db:migrate:cloudflare": "wrangler d1 migrations apply rich-asset-property-db --remote --config wrangler.jsonc",
     "deploy:cloudflare": "pnpm run build && wrangler deploy --config wrangler.jsonc"
