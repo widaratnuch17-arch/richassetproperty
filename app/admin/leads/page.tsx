@@ -32,6 +32,7 @@ export default async function AdminLeadsPage({ searchParams }: AdminLeadsPagePro
         <nav>
           <Link href="/admin">ภาพรวมงาน</Link>
           <Link href="/admin/properties">จัดการทรัพย์</Link>
+          <Link href="/admin/content">ชุดโพสต์</Link>
           <Link href="/">ดูเว็บไซต์</Link>
           <a href={adminSignOutPath(user)}>ออกจากระบบ</a>
         </nav>

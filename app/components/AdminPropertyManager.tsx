@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, ExternalLink, ImagePlus, LoaderCircle, Pencil, Plus, Save, X } from "lucide-react";
+import { Check, ExternalLink, FileText, ImagePlus, LoaderCircle, Pencil, Plus, Save, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { FormEvent, useMemo, useState } from "react";
@@ -160,6 +160,7 @@ export function AdminPropertyManager({ initialProperties }: { initialProperties:
             </div>
             <div className="admin-property-actions">
               <Link href={`/properties/${property.id}`} target="_blank"><ExternalLink /> ดูหน้าเว็บ</Link>
+              <Link href={`/admin/content?property=${property.id}`}><FileText /> ชุดโพสต์</Link>
               <button type="button" onClick={() => startEdit(property)}><Pencil /> แก้ไข</button>
             </div>
           </article>

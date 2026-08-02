@@ -26,6 +26,7 @@ export default async function AdminPropertiesPage() {
         <nav>
           <Link href="/admin">ภาพรวมงาน</Link>
           <Link href="/admin/leads">ลูกค้าฝากขาย</Link>
+          <Link href="/admin/content">ชุดโพสต์</Link>
           <Link href="/">ดูเว็บไซต์</Link>
           <a href={adminSignOutPath(user)}>ออกจากระบบ</a>
         </nav>

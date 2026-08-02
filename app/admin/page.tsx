@@ -97,6 +97,7 @@ export default async function AdminDashboardPage() {
         <nav>
           <Link href="/admin/leads">ลูกค้าฝากขาย</Link>
           <Link href="/admin/properties">จัดการทรัพย์</Link>
+          <Link href="/admin/content">ชุดโพสต์</Link>
           <Link href="/">ดูเว็บไซต์</Link>
           <a href={adminSignOutPath(user)}>ออกจากระบบ</a>
         </nav>

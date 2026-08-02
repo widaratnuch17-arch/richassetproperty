@@ -4768,3 +4768,276 @@ footer .button--ghost {
   font-size: 0.66rem;
   text-align: center;
 }
+
+.admin-content-page {
+  gap: 18px;
+}
+
+.admin-content-picker {
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 22px;
+  display: grid;
+  grid-template-columns: minmax(260px, 0.72fr) minmax(0, 1.28fr);
+  align-items: end;
+  gap: 18px;
+  border: 1px solid rgba(6, 63, 140, 0.09);
+  border-radius: 26px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 14px 38px rgba(21, 48, 80, 0.055);
+}
+
+.admin-content-picker label {
+  display: block;
+  color: var(--blue-night);
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.admin-content-picker select {
+  width: 100%;
+  min-height: 52px;
+  margin-top: 8px;
+  padding: 0 14px;
+  border: 1px solid rgba(6, 63, 140, 0.16);
+  border-radius: 14px;
+  outline: none;
+  background: #f9fbfd;
+  color: var(--blue-night);
+  font: inherit;
+}
+
+.admin-content-picker select:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 4px rgba(6, 63, 140, 0.08);
+}
+
+.admin-content-property {
+  min-width: 0;
+  padding: 10px;
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 13px;
+  border-radius: 18px;
+  background: #f3f7fb;
+}
+
+.admin-content-property > span {
+  position: relative;
+  width: 76px;
+  height: 64px;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #dbe5ef;
+}
+
+.admin-content-property img {
+  object-fit: cover;
+}
+
+.admin-content-property div {
+  min-width: 0;
+}
+
+.admin-content-property small,
+.admin-content-property strong,
+.admin-content-property p {
+  display: block;
+}
+
+.admin-content-property small {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 0.62rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-content-property strong {
+  margin-top: 3px;
+  overflow: hidden;
+  color: var(--blue-night);
+  font-size: 0.82rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-content-property p {
+  margin-top: 3px;
+  color: var(--blue);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.admin-content-property > a {
+  min-height: 38px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid rgba(6, 63, 140, 0.15);
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--blue);
+  font-size: 0.66rem;
+  font-weight: 600;
+}
+
+.admin-content-property > a svg {
+  width: 14px;
+}
+
+.admin-content-warning {
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 13px 16px;
+  border-radius: 14px;
+  background: #fff5df;
+  color: #80540c;
+  font-size: 0.72rem;
+}
+
+.admin-content-grid {
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
+  gap: 14px;
+}
+
+.admin-content-panel {
+  overflow: hidden;
+  border: 1px solid rgba(6, 63, 140, 0.09);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 14px 38px rgba(21, 48, 80, 0.055);
+}
+
+.admin-content-panel > header {
+  min-height: 106px;
+  padding: 20px;
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 11px;
+}
+
+.admin-content-panel > header > span {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  background: #e8f1ff;
+  color: var(--blue);
+}
+
+.admin-content-panel > header svg {
+  width: 20px;
+}
+
+.admin-content-panel h2 {
+  color: var(--blue-night);
+  font-size: 1rem;
+}
+
+.admin-content-panel header p {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 0.64rem;
+  line-height: 1.5;
+}
+
+.admin-content-panel textarea {
+  width: 100%;
+  min-height: 500px;
+  padding: 20px;
+  display: block;
+  resize: vertical;
+  border: 0;
+  border-top: 1px solid rgba(6, 63, 140, 0.08);
+  border-bottom: 1px solid rgba(6, 63, 140, 0.08);
+  outline: 0;
+  background: #fbfcfe;
+  color: #26384d;
+  font: inherit;
+  font-size: 0.72rem;
+  line-height: 1.7;
+}
+
+.admin-content-panel > footer {
+  padding: 13px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.admin-content-panel footer small {
+  color: var(--muted);
+  font-size: 0.62rem;
+}
+
+.admin-content-panel footer button {
+  min-height: 40px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--blue);
+  color: var(--white);
+  font-size: 0.68rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.admin-content-panel footer button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.admin-content-panel footer button svg {
+  width: 15px;
+}
+
+@media (max-width: 980px) {
+  .admin-content-picker,
+  .admin-content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-content-panel textarea {
+    min-height: 360px;
+  }
+}
+
+@media (max-width: 600px) {
+  .admin-content-picker {
+    padding: 16px;
+  }
+
+  .admin-content-property {
+    grid-template-columns: 64px minmax(0, 1fr);
+  }
+
+  .admin-content-property > span {
+    width: 64px;
+    height: 58px;
+  }
+
+  .admin-content-property > a {
+    grid-column: 1 / -1;
+    justify-content: center;
+  }
+
+  .admin-content-panel textarea {
+    min-height: 420px;
+  }
+}
