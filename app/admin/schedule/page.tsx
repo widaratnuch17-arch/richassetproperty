@@ -49,6 +49,7 @@ export default async function ContentSchedulePage({ searchParams }: SchedulePage
           <Link href="/admin/leads">ลูกค้าฝากขาย</Link>
           <Link href="/admin/properties">จัดการทรัพย์</Link>
           <Link href="/admin/content">ชุดโพสต์</Link>
+          <Link href="/admin/reports">รายงาน</Link>
           <Link href="/">ดูเว็บไซต์</Link>
           <a href={adminSignOutPath(user)}>ออกจากระบบ</a>
         </nav>

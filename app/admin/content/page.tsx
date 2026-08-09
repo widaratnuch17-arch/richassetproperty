@@ -40,6 +40,7 @@ export default async function AdminContentPage({ searchParams }: AdminContentPag
           <Link href="/admin/leads">ลูกค้าฝากขาย</Link>
           <Link href="/admin/properties">จัดการทรัพย์</Link>
           <Link href="/admin/schedule">คิวคอนเทนต์</Link>
+          <Link href="/admin/reports">รายงาน</Link>
           <Link href="/">ดูเว็บไซต์</Link>
           <a href={adminSignOutPath(user)}>ออกจากระบบ</a>
         </nav>
