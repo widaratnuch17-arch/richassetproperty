@@ -43,6 +43,13 @@
       "when": 1786515861265,
       "tag": "0005_bent_warbound",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1786525493245,
+      "tag": "0006_lumpy_sharon_ventura",
+      "breakpoints": true
     }
   ]
 }

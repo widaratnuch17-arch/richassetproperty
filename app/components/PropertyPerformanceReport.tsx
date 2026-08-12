@@ -5,7 +5,7 @@ import {
   MousePointerClick, Phone, Save, Send, Sparkles, Target, UserCheck,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { FormEvent, useMemo, useState } from "react";
 import type { PropertyInquiry, PropertyInquiryStatus, PropertyPerformanceEvent } from "../../db/property-analytics";
 import type { Property } from "../data/properties";
 
@@ -28,6 +28,16 @@ const channels = [
 ] as const;
 
 type MutableInquiry = PropertyInquiry & { saving?: boolean; saved?: boolean; error?: string };
+
+function inputMoney(value: string) {
+  if (!value) return null;
+  const parsed = Number(value);
+  return Number.isSafeInteger(parsed) && parsed >= 0 ? parsed : null;
+}
+
+function formatMoney(value: number) {
+  return new Intl.NumberFormat("th-TH", { maximumFractionDigits: 0 }).format(value);
+}
 
 function percent(numerator: number, denominator: number) {
   return denominator > 0 ? ((numerator / denominator) * 100).toFixed(1) + "%" : "—";
@@ -60,6 +70,8 @@ export function PropertyPerformanceReport({
   const [linkProperty, setLinkProperty] = useState(properties.find((item) => item.status === "active")?.id ?? properties[0]?.id ?? "");
   const [linkSource, setLinkSource] = useState("facebook");
   const [copied, setCopied] = useState(false);
+  const [addingLead, setAddingLead] = useState(false);
+  const [addError, setAddError] = useState("");
 
   const report = useMemo(() => {
     const propertyRows = properties.map((property) => {
@@ -117,7 +129,11 @@ export function PropertyPerformanceReport({
     try {
       const response = await fetch("/api/admin/property-inquiries", {
         method: "PUT", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: item.id, status: item.status, adminNotes: item.adminNotes, nextFollowUp: item.nextFollowUp }),
+        body: JSON.stringify({
+          id: item.id, status: item.status, adminNotes: item.adminNotes, nextFollowUp: item.nextFollowUp,
+          appointmentAt: item.appointmentAt, offerAmount: item.offerAmount, salePrice: item.salePrice,
+          commissionIncome: item.commissionIncome, dealExpenses: item.dealExpenses, closedAt: item.closedAt,
+        }),
       });
       const result = (await response.json()) as { inquiry?: PropertyInquiry; error?: string };
       if (!response.ok || !result.inquiry) throw new Error(result.error || "บันทึกไม่สำเร็จ");
@@ -125,6 +141,21 @@ export function PropertyPerformanceReport({
     } catch (error) {
       updateInquiry(item.id, { saving: false, error: error instanceof Error ? error.message : "บันทึกไม่สำเร็จ" });
     }
+  }
+
+  async function addManualLead(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault(); setAddingLead(true); setAddError("");
+    const form = event.currentTarget; const data = new FormData(form);
+    try {
+      const response = await fetch("/api/admin/property-inquiries", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(Object.fromEntries(data.entries())),
+      });
+      const result = (await response.json()) as { inquiry?: PropertyInquiry; error?: string };
+      if (!response.ok || !result.inquiry) throw new Error(result.error || "เพิ่มลีดไม่สำเร็จ");
+      setInquiries((current) => [result.inquiry!, ...current]); form.reset();
+    } catch (error) { setAddError(error instanceof Error ? error.message : "เพิ่มลีดไม่สำเร็จ"); }
+    finally { setAddingLead(false); }
   }
 
   return (
@@ -177,8 +208,19 @@ export function PropertyPerformanceReport({
         <p>ใช้ลิงก์ที่สร้างแทนลิงก์หน้าทรัพย์ปกติ ระบบจึงบอกได้ว่าลูกค้ามาจากโพสต์ช่องทางใด</p>
       </article>
 
-      <article className="inquiry-pipeline">
+      <article className="inquiry-pipeline" id="buyer-pipeline">
         <header><MessageCircle /><div><small>นุชอัปเดตหลังคุยกับลูกค้า</small><h3>ลีดผู้ซื้อและขั้นตอนติดตาม</h3></div></header>
+        <form className="manual-buyer-lead" onSubmit={addManualLead}>
+          <div><strong>บันทึกลีดที่โทรหรือทัก LINE มาเอง</strong><small>ใช้เมื่อผู้สนใจไม่ได้กรอกแบบฟอร์มหน้าเว็บไซต์</small></div>
+          <label>ทรัพย์<select name="propertyId" required defaultValue=""><option value="" disabled>เลือกทรัพย์</option>{properties.map((property) => <option value={property.id} key={property.id}>{property.title}</option>)}</select></label>
+          <label>ชื่อ<input name="fullName" required maxLength={100} /></label>
+          <label>เบอร์โทร<input name="phone" type="tel" required maxLength={30} /></label>
+          <label>LINE ID<input name="lineId" maxLength={100} /></label>
+          <label>ช่องทาง<select name="source" defaultValue="manual"><option value="manual">ไม่ระบุ</option>{channels.map(([value, label]) => <option value={value} key={value}>{label}</option>)}</select></label>
+          <label className="manual-lead-message">รายละเอียด<input name="message" maxLength={600} placeholder="เช่น โทรจากป้ายหน้าทรัพย์ ต้องการนัดชม" /></label>
+          <button type="submit" disabled={addingLead}><Send /> {addingLead ? "กำลังเพิ่ม" : "เพิ่มลีดผู้ซื้อ"}</button>
+          {addError && <small className="inquiry-error">{addError}</small>}
+        </form>
         {inquiries.length === 0 ? <div className="inquiry-empty">ยังไม่มีผู้สนใจส่งแบบฟอร์มนัดชมในช่วงนี้</div> : <div className="inquiry-list">{inquiries.map((item) => {
           const property = properties.find((row) => row.id === item.propertyId);
           return <section key={item.id}>
@@ -188,7 +230,14 @@ export function PropertyPerformanceReport({
             <div className="inquiry-fields">
               <label>สถานะ<select value={item.status} onChange={(event) => updateInquiry(item.id, { status: event.target.value as PropertyInquiryStatus })}>{statusOptions.map(([value, label]) => <option value={value} key={value}>{label}</option>)}</select></label>
               <label>ติดตามครั้งถัดไป<input type="datetime-local" value={item.nextFollowUp ?? ""} onChange={(event) => updateInquiry(item.id, { nextFollowUp: event.target.value || null })} /></label>
+              <label>วันนัดชม<input type="datetime-local" value={item.appointmentAt ?? ""} onChange={(event) => updateInquiry(item.id, { appointmentAt: event.target.value || null })} /></label>
+              <label>ข้อเสนอ (บาท)<input type="number" min="0" step="1000" value={item.offerAmount ?? ""} onChange={(event) => updateInquiry(item.id, { offerAmount: inputMoney(event.target.value) })} /></label>
+              <label>มูลค่าขายอสังหาฯ<input type="number" min="0" step="1000" value={item.salePrice ?? ""} onChange={(event) => updateInquiry(item.id, { salePrice: inputMoney(event.target.value) })} /></label>
+              <label>รายได้ค่าคอมมิชชัน<input type="number" min="0" step="100" value={item.commissionIncome ?? ""} onChange={(event) => updateInquiry(item.id, { commissionIncome: inputMoney(event.target.value) })} /></label>
+              <label>ค่าใช้จ่ายดีล<input type="number" min="0" step="100" value={item.dealExpenses} onChange={(event) => updateInquiry(item.id, { dealExpenses: inputMoney(event.target.value) ?? 0 })} /></label>
+              <label>วันที่ปิดการขาย<input type="date" value={item.closedAt?.slice(0, 10) ?? ""} onChange={(event) => updateInquiry(item.id, { closedAt: event.target.value || null })} /></label>
               <label>บันทึก<textarea value={item.adminNotes ?? ""} onChange={(event) => updateInquiry(item.id, { adminNotes: event.target.value })} rows={2} maxLength={2000} /></label>
+              {(item.salePrice || item.commissionIncome) && <p className="inquiry-deal-summary"><span>ยอดขาย {formatMoney(item.salePrice ?? 0)} บาท</span><strong>รายได้สุทธิ {formatMoney((item.commissionIncome ?? 0) - item.dealExpenses)} บาท</strong></p>}
               <button type="button" onClick={() => saveInquiry(item)} disabled={item.saving}><Save /> {item.saving ? "กำลังบันทึก" : item.saved ? "บันทึกแล้ว" : "บันทึก"}</button>{item.error && <small className="inquiry-error">{item.error}</small>}
             </div>
           </section>;

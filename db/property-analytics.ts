@@ -45,6 +45,12 @@ export type PropertyInquiry = {
   status: PropertyInquiryStatus;
   adminNotes: string | null;
   nextFollowUp: string | null;
+  appointmentAt: string | null;
+  offerAmount: number | null;
+  salePrice: number | null;
+  commissionIncome: number | null;
+  dealExpenses: number;
+  closedAt: string | null;
   consent: boolean;
   createdAt: string;
   updatedAt: string | null;
@@ -142,6 +148,12 @@ export async function updatePropertyInquiry(
     status: PropertyInquiryStatus;
     adminNotes: string | null;
     nextFollowUp: string | null;
+    appointmentAt: string | null;
+    offerAmount: number | null;
+    salePrice: number | null;
+    commissionIncome: number | null;
+    dealExpenses: number;
+    closedAt: string | null;
   },
 ) {
   const [row] = await getDb()
@@ -150,6 +162,14 @@ export async function updatePropertyInquiry(
     .where(eq(propertyInquiries.id, id))
     .returning();
   return row ? toInquiry(row) : undefined;
+}
+
+export async function getPropertyInquiries() {
+  const rows = await getDb()
+    .select()
+    .from(propertyInquiries)
+    .orderBy(desc(propertyInquiries.createdAt), desc(propertyInquiries.id));
+  return rows.map(toInquiry);
 }
 
 export async function propertyExists(propertyId: string) {

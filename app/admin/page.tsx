@@ -4,16 +4,20 @@ import {
   ArrowRight,
   CalendarClock,
   CheckCircle2,
+  CircleDollarSign,
   Clock3,
+  HandCoins,
   House,
   MessageCircle,
   Phone,
   UserRoundPlus,
+  WalletCards,
 } from "lucide-react";
 import Link from "next/link";
 import { adminSignOutPath, requireOwner } from "../admin-auth";
-import { getListingLeads, type ListingLead } from "../../db/listing-leads";
+import { getListingLeads } from "../../db/listing-leads";
 import { getManagedProperties } from "../../db/managed-properties";
+import { getPropertyInquiries } from "../../db/property-analytics";
 
 export const dynamic = "force-dynamic";
 
@@ -46,18 +50,12 @@ function lineUrl(lineId: string) {
   return `https://line.me/ti/p/~${encodeURIComponent(lineId.trim().replace(/^@/, ""))}`;
 }
 
-function actionLabel(lead: ListingLead, today: string) {
-  if (lead.status === "new") return "ลูกค้าใหม่ · ควรติดต่อกลับ";
-  const followUpDate = lead.nextFollowUp?.slice(0, 10);
-  if (followUpDate && followUpDate < today) return "เลยวันติดตาม";
-  return "ติดตามวันนี้";
-}
-
 export default async function AdminDashboardPage() {
   const user = await requireOwner("/admin");
-  const [leads, properties] = await Promise.all([
+  const [leads, properties, buyerLeads] = await Promise.all([
     getListingLeads(),
     getManagedProperties(true),
+    getPropertyInquiries(),
   ]);
   const today = bangkokToday();
   const openLeads = leads.filter((lead) => !["won", "closed"].includes(lead.status));
@@ -76,7 +74,7 @@ export default async function AdminDashboardPage() {
           Boolean(lead.nextFollowUp && lead.nextFollowUp.slice(0, 10) <= today)),
     )
     .sort((a, b) => {
-      const priority = (lead: ListingLead) => {
+      const priority = (lead: (typeof leads)[number]) => {
         if (lead.status === "new") return 0;
         if (lead.nextFollowUp && lead.nextFollowUp.slice(0, 10) < today) return 1;
         return 2;
@@ -85,6 +83,38 @@ export default async function AdminDashboardPage() {
     })
     .slice(0, 8);
   const activeProperties = properties.filter((property) => property.status === "active");
+  const openBuyerLeads = buyerLeads.filter((lead) => !["won", "closed"].includes(lead.status));
+  const buyerNew = openBuyerLeads.filter((lead) => lead.status === "new");
+  const buyerOverdue = openBuyerLeads.filter((lead) => lead.nextFollowUp && lead.nextFollowUp.slice(0, 10) < today);
+  const buyerDueToday = openBuyerLeads.filter((lead) => lead.nextFollowUp?.slice(0, 10) === today);
+  const propertyById = new Map(properties.map((property) => [property.id, property]));
+  const buyerActions = openBuyerLeads
+    .filter((lead) => lead.status === "new" || Boolean(lead.nextFollowUp && lead.nextFollowUp.slice(0, 10) <= today))
+    .map((lead) => ({
+      key: `buyer-${lead.id}`, type: "ผู้ซื้อ", fullName: lead.fullName, phone: lead.phone, lineId: lead.lineId,
+      detail: propertyById.get(lead.propertyId)?.title ?? lead.propertyId, nextFollowUp: lead.nextFollowUp,
+      isNew: lead.status === "new", href: "/admin/reports#buyer-pipeline",
+    }));
+  const sellerActions = actionLeads.map((lead) => ({
+    key: `seller-${lead.id}`, type: "ฝากขาย", fullName: lead.fullName, phone: lead.phone, lineId: lead.lineId,
+    detail: `${lead.propertyType} · ${lead.location}`, nextFollowUp: lead.nextFollowUp,
+    isNew: lead.status === "new", href: "/admin/leads?filter=attention",
+  }));
+  const combinedActions = [...buyerActions, ...sellerActions]
+    .sort((a, b) => Number(b.isNew) - Number(a.isNew) || (a.nextFollowUp ?? "").localeCompare(b.nextFollowUp ?? ""))
+    .slice(0, 10);
+  const currentYear = today.slice(0, 4);
+  const currentMonth = today.slice(0, 7);
+  const closedThisYear = buyerLeads.filter((lead) => lead.status === "won" && lead.closedAt?.slice(0, 4) === currentYear);
+  const closedThisMonth = closedThisYear.filter((lead) => lead.closedAt?.slice(0, 7) === currentMonth);
+  const total = (items: typeof buyerLeads, field: "salePrice" | "commissionIncome" | "dealExpenses") =>
+    items.reduce((sum, item) => sum + (item[field] ?? 0), 0);
+  const annualSales = total(closedThisYear, "salePrice");
+  const annualCommission = total(closedThisYear, "commissionIncome");
+  const annualExpenses = total(closedThisYear, "dealExpenses");
+  const annualNet = annualCommission - annualExpenses;
+  const monthlyNet = total(closedThisMonth, "commissionIncome") - total(closedThisMonth, "dealExpenses");
+  const money = (value: number) => new Intl.NumberFormat("th-TH", { maximumFractionDigits: 0 }).format(value);
 
   return (
     <main className="admin-page admin-dashboard-page">
@@ -108,20 +138,31 @@ export default async function AdminDashboardPage() {
       <section className="admin-summary admin-dashboard-summary">
         <Link href="/admin/leads?filter=attention" data-tone="blue">
           <UserRoundPlus />
-          <span><small>ลูกค้าใหม่</small><strong>{newLeads.length}</strong></span>
+          <span><small>ลีดใหม่ทั้งหมด</small><strong>{newLeads.length + buyerNew.length}</strong></span>
         </Link>
         <Link href="/admin/leads?filter=attention" data-tone="red">
           <AlertCircle />
-          <span><small>เลยวันติดตาม</small><strong>{overdueLeads.length}</strong></span>
+          <span><small>เลยวันติดตาม</small><strong>{overdueLeads.length + buyerOverdue.length}</strong></span>
         </Link>
         <Link href="/admin/leads?filter=attention" data-tone="amber">
           <CalendarClock />
-          <span><small>ต้องติดตามวันนี้</small><strong>{dueTodayLeads.length}</strong></span>
+          <span><small>ต้องติดตามวันนี้</small><strong>{dueTodayLeads.length + buyerDueToday.length}</strong></span>
         </Link>
         <Link href="/admin/properties" data-tone="green">
           <House />
           <span><small>ทรัพย์พร้อมขาย</small><strong>{activeProperties.length}</strong></span>
         </Link>
+      </section>
+
+      <section className="business-goal-panel">
+        <div className="business-goal-heading"><div><p className="section-kicker">เป้าหมายธุรกิจ {currentYear}</p><h2>ยอดขายและรายได้จริง</h2></div><Link href="/admin/reports#buyer-pipeline">อัปเดตดีล <ArrowRight /></Link></div>
+        <div className="business-goal-cards">
+          <article><House /><div><small>มูลค่าขายอสังหาฯ ปีนี้</small><strong>{money(annualSales)} บาท</strong><span>{Math.min(100, (annualSales / 50_000_000) * 100).toFixed(1)}% ของเป้า 50 ล้านบาท</span><i><b style={{ width: `${Math.min(100, (annualSales / 50_000_000) * 100)}%` }} /></i></div></article>
+          <article><CircleDollarSign /><div><small>รายได้ค่าคอมมิชชันปีนี้</small><strong>{money(annualCommission)} บาท</strong><span>แยกจากมูลค่าขายอสังหาฯ</span></div></article>
+          <article><WalletCards /><div><small>ค่าใช้จ่ายดีลปีนี้</small><strong>{money(annualExpenses)} บาท</strong><span>หักจากค่าคอมมิชชัน</span></div></article>
+          <article><HandCoins /><div><small>รายได้สุทธิเดือนนี้</small><strong>{money(monthlyNet)} บาท</strong><span>{Math.min(100, (monthlyNet / 200_000) * 100).toFixed(1)}% ของเป้า 200,000 บาท</span><i><b style={{ width: `${Math.max(0, Math.min(100, (monthlyNet / 200_000) * 100))}%` }} /></i></div></article>
+        </div>
+        <p className="business-goal-net">รายได้สุทธิสะสมปีนี้ = ค่าคอมมิชชัน {money(annualCommission)} − ค่าใช้จ่ายดีล {money(annualExpenses)} = <strong>{money(annualNet)} บาท</strong></p>
       </section>
 
       <section className="admin-dashboard-grid">
@@ -136,7 +177,7 @@ export default async function AdminDashboardPage() {
             </Link>
           </div>
 
-          {actionLeads.length === 0 ? (
+          {combinedActions.length === 0 ? (
             <div className="admin-today-empty">
               <CheckCircle2 />
               <h3>งานติดตามครบแล้ว</h3>
@@ -144,14 +185,14 @@ export default async function AdminDashboardPage() {
             </div>
           ) : (
             <div className="admin-today-list">
-              {actionLeads.map((lead) => (
-                <article key={lead.id}>
+              {combinedActions.map((lead) => (
+                <article key={lead.key}>
                   <div className="admin-today-person">
                     <span>{lead.fullName.slice(0, 1).toUpperCase()}</span>
                     <div>
-                      <small>{actionLabel(lead, today)}</small>
+                      <small>{lead.type} · {lead.isNew ? "ลีดใหม่ ควรติดต่อกลับ" : lead.nextFollowUp && lead.nextFollowUp.slice(0, 10) < today ? "เลยวันติดตาม" : "ติดตามวันนี้"}</small>
                       <h3>{lead.fullName}</h3>
-                      <p>{lead.propertyType} · {lead.location}</p>
+                      <p>{lead.detail}</p>
                       {lead.nextFollowUp && (
                         <p className="admin-today-time">
                           <Clock3 /> {formatFollowUp(lead.nextFollowUp)}
@@ -173,7 +214,7 @@ export default async function AdminDashboardPage() {
                         <MessageCircle />
                       </a>
                     )}
-                    <Link href="/admin/leads?filter=attention">
+                    <Link href={lead.href}>
                       เปิดข้อมูล <ArrowRight />
                     </Link>
                   </div>
