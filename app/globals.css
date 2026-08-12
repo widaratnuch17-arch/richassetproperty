@@ -15,6 +15,8 @@
   --radius-md: 24px;
   --shadow: 0 22px 70px rgba(6, 63, 140, 0.14);
   --ease-premium: cubic-bezier(0.16, 1, 0.3, 1);
+  --font-sans: var(--font-anuphan), "Noto Sans Thai", system-ui, sans-serif;
+  --font-serif: var(--font-anuphan), "Noto Sans Thai", system-ui, sans-serif;
 }
 
 * {
@@ -31,7 +33,9 @@ html {
 body {
   background: var(--paper);
   color: var(--ink);
-  font-family: var(--font-kanit), "Noto Sans Thai", sans-serif;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.65;
   overflow-x: hidden;
 }
 
@@ -4832,6 +4836,152 @@ footer .button--ghost {
 
   .admin-editor-actions button {
     justify-content: center;
+  }
+}
+
+/* Modern Thai typography: roomier marks, clearer hierarchy, readable minimum sizes. */
+.hero h1,
+.audience-heading h2,
+.section h2,
+.buyer-support-copy h2,
+.about-section h2,
+.services-title h2,
+.success-section h2,
+.seller-section h2,
+.listing-form-intro h2,
+.faq-heading h2,
+footer h2,
+.property-detail-title h1,
+.property-detail-copy h2,
+.related-properties h2 {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  letter-spacing: -0.018em;
+  line-height: 1.17;
+  text-wrap: balance;
+}
+
+.hero h1 {
+  font-size: clamp(2.75rem, 6.2vw, 6.25rem);
+  line-height: 1.12;
+}
+
+.audience-heading h2,
+.section h2,
+.about-section h2,
+.success-section h2,
+.seller-section h2,
+footer h2 {
+  font-size: clamp(2.35rem, 5.35vw, 5.4rem);
+}
+
+.buyer-support-copy h2,
+.listing-form-intro h2 {
+  font-size: clamp(2.35rem, 4.8vw, 4.9rem);
+}
+
+.hero-lead,
+.section-intro,
+.audience-card > p:not(.audience-label),
+.buyer-support-copy > p:not(.section-kicker),
+.about-lead,
+.service-row p,
+.success-head > div:last-child p,
+.seller-lead,
+.listing-form-lead,
+.faq-list details > p {
+  font-size: clamp(0.98rem, 1.2vw, 1.08rem);
+  line-height: 1.85;
+}
+
+.eyebrow,
+.section-kicker,
+.audience-label,
+.footer-eyebrow {
+  font-size: 0.82rem;
+  letter-spacing: 0.045em;
+  line-height: 1.65;
+}
+
+.hero-points,
+.trust-strip small,
+.hero-house-label span,
+.hero-house-label small,
+.hero-badge small,
+.property-type,
+.property-status,
+.property-location,
+.property-specs,
+.area-chips span,
+.expertise-band > div > p,
+.buyer-support-list small,
+.about-caption span,
+.about-values small,
+.service-number,
+.seller-offer small,
+.seller-note,
+.listing-form-facts small,
+.listing-form-contact,
+.footer-bottom {
+  font-size: max(0.8rem, 13px);
+  line-height: 1.6;
+}
+
+.desktop-nav a,
+.button,
+.header-line,
+.filter-row button,
+.text-link,
+.buyer-support-cta,
+.property-body,
+.audience-card,
+.service-row,
+.seller-card,
+.listing-lead-form,
+.faq-list summary {
+  letter-spacing: 0;
+}
+
+.property-body h3,
+.audience-card h3,
+.service-row h3,
+.buyer-support-list strong,
+.about-values strong,
+.seller-offer strong {
+  line-height: 1.5;
+}
+
+@media (max-width: 600px) {
+  .hero h1 {
+    font-size: clamp(2.65rem, 12vw, 3.75rem);
+    line-height: 1.14;
+  }
+
+  .audience-heading h2,
+  .section h2,
+  .about-section h2,
+  .success-section h2,
+  .seller-section h2,
+  footer h2,
+  .buyer-support-copy h2,
+  .listing-form-intro h2 {
+    font-size: clamp(2.15rem, 9.6vw, 3.15rem);
+    line-height: 1.2;
+  }
+
+  .hero-lead,
+  .section-intro,
+  .audience-card > p:not(.audience-label),
+  .service-row p,
+  .seller-lead,
+  .listing-form-lead,
+  .faq-list details > p {
+    font-size: 1rem;
+    line-height: 1.8;
+  }
+
+  .trust-strip small {
+    font-size: 0.78rem;
   }
 }
 

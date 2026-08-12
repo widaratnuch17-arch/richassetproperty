@@ -1,12 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { Kanit } from "next/font/google";
+import { Anuphan } from "next/font/google";
 import { headers } from "next/headers";
 import "./globals.css";
 
-const kanit = Kanit({
-  variable: "--font-kanit",
+const anuphan = Anuphan({
+  variable: "--font-anuphan",
   subsets: ["thai", "latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
+  weight: ["300", "400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -80,7 +80,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="th">
-      <body className={kanit.variable}>{children}</body>
+      <body className={anuphan.variable}>{children}</body>
     </html>
   );
 }
