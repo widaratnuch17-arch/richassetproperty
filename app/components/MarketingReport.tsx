@@ -136,7 +136,11 @@ export function MarketingReport({
   const visibleReports = useMemo(() => {
     const normalizedQuery = query.trim().toLocaleLowerCase("th-TH");
     return reports
-      .filter(({ property }) => filter === "all" || (property.status ?? "active") === filter)
+      .filter(({ property }) => {
+        if (filter === "all") return true;
+        if (filter === "hidden") return property.visible === false || property.status === "hidden";
+        return (property.status ?? "active") === filter;
+      })
       .filter(({ property }) =>
         !normalizedQuery ||
         `${property.title} ${property.location} ${property.type}`
@@ -232,7 +236,7 @@ export function MarketingReport({
               <option value="active">พร้อมขาย</option>
               <option value="reserved">ติดจอง</option>
               <option value="sold">ขายแล้ว</option>
-              <option value="hidden">ซ่อนรายการ</option>
+              <option value="hidden">ปิดการแสดง</option>
               <option value="all">ทุกสถานะ</option>
             </select>
             <button type="button" onClick={exportCsv} disabled={visibleReports.length === 0}>

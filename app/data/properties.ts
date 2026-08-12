@@ -17,6 +17,7 @@ export type Property = {
   map: string;
   images: string[];
   status?: PropertyStatus;
+  visible?: boolean;
 };
 
 export const propertyDetails: Property[] = [

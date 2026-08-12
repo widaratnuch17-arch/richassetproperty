@@ -2716,7 +2716,7 @@ footer .button--ghost {
 .admin-summary {
   margin-bottom: 18px;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 12px;
 }
 
@@ -2822,6 +2822,36 @@ footer .button--ghost {
   min-width: 0;
 }
 
+.admin-property-badges {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.admin-visibility {
+  padding: 7px 11px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 999px;
+  background: #e8f2ff;
+  color: #164f91;
+  font-size: 0.69rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.admin-visibility svg {
+  width: 14px;
+  height: 14px;
+}
+
+.admin-visibility[data-visible="false"] {
+  background: #f0f1f3;
+  color: #616b76;
+}
+
 .admin-property-info h3 {
   margin-top: 8px;
   overflow: hidden;
@@ -2871,7 +2901,20 @@ footer .button--ghost {
 
 .admin-property-actions {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 8px;
+}
+
+.admin-property-actions .admin-delete {
+  border-color: #e6b7b2;
+  background: #fff5f4;
+  color: #9d2e25;
+}
+
+.admin-property-actions button:disabled {
+  opacity: 0.55;
+  cursor: wait;
 }
 
 .admin-editor-backdrop {

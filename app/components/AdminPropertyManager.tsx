@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, ExternalLink, FileText, ImagePlus, LoaderCircle, Pencil, Plus, Save, X } from "lucide-react";
+import { Check, ExternalLink, Eye, EyeOff, FileText, ImagePlus, LoaderCircle, Pencil, Plus, Save, Trash2, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { FormEvent, useMemo, useRef, useState } from "react";
@@ -23,6 +23,7 @@ const emptyProperty: Property = {
   map: "",
   images: [],
   status: "active",
+  visible: true,
 };
 
 const statusLabels: Record<PropertyStatus, string> = {
@@ -31,6 +32,8 @@ const statusLabels: Record<PropertyStatus, string> = {
   sold: "ขายแล้ว",
   hidden: "ซ่อนรายการ",
 };
+
+const editableStatuses: PropertyStatus[] = ["active", "reserved", "sold"];
 
 const MAX_SOURCE_IMAGE_SIZE = 8 * 1024 * 1024;
 const TARGET_IMAGE_SIZE = 1_100_000;
@@ -71,6 +74,7 @@ export function AdminPropertyManager({ initialProperties }: { initialProperties:
   const [isNew, setIsNew] = useState(false);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [actionId, setActionId] = useState<string | null>(null);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const feedbackRef = useRef<HTMLDivElement>(null);
@@ -81,6 +85,8 @@ export function AdminPropertyManager({ initialProperties }: { initialProperties:
       active: properties.filter((property) => property.status === "active").length,
       reserved: properties.filter((property) => property.status === "reserved").length,
       sold: properties.filter((property) => property.status === "sold").length,
+      visible: properties.filter((property) => property.visible !== false && property.status !== "hidden").length,
+      hidden: properties.filter((property) => property.visible === false || property.status === "hidden").length,
     }),
     [properties],
   );
@@ -172,10 +178,61 @@ export function AdminPropertyManager({ initialProperties }: { initialProperties:
     }
   }
 
+  async function toggleVisibility(property: Property) {
+    const visible = !(property.visible !== false && property.status !== "hidden");
+    setActionId(property.id);
+    setError("");
+    setMessage("");
+    try {
+      const response = await fetch("/api/admin/properties", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: property.id, visible }),
+      });
+      const result = (await response.json()) as { property?: Property; error?: string };
+      if (!response.ok || !result.property) throw new Error(result.error || "เปลี่ยนการแสดงผลไม่สำเร็จ");
+      setProperties((current) => current.map((item) => item.id === property.id ? result.property! : item));
+      setMessage(visible ? `เปิดแสดง “${property.title}” บนเว็บไซต์แล้ว` : `ปิดการแสดง “${property.title}” แล้ว ข้อมูลยังอยู่ครบ`);
+    } catch (actionError) {
+      setError(actionError instanceof Error ? actionError.message : "เปลี่ยนการแสดงผลไม่สำเร็จ");
+    } finally {
+      setActionId(null);
+    }
+  }
+
+  async function removeProperty(property: Property) {
+    const confirmed = window.confirm(
+      `ยืนยันลบ “${property.title}” ถาวร?\n\nหน้าทรัพย์ รูปที่อัปโหลด สถิติ และแผนคอนเทนต์ที่ผูกกับทรัพย์จะถูกลบและกู้คืนไม่ได้ หากมีข้อมูลผู้สนใจ ระบบจะไม่อนุญาตให้ลบ`,
+    );
+    if (!confirmed) return;
+
+    setActionId(property.id);
+    setError("");
+    setMessage("");
+    try {
+      const response = await fetch("/api/admin/properties", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: property.id }),
+      });
+      const result = (await response.json()) as { deleted?: boolean; error?: string };
+      if (!response.ok || !result.deleted) throw new Error(result.error || "ลบทรัพย์ไม่สำเร็จ");
+      setProperties((current) => current.filter((item) => item.id !== property.id));
+      if (editing?.id === property.id) setEditing(null);
+      setMessage(`ลบ “${property.title}” ออกจากระบบถาวรแล้ว`);
+    } catch (actionError) {
+      setError(actionError instanceof Error ? actionError.message : "ลบทรัพย์ไม่สำเร็จ");
+    } finally {
+      setActionId(null);
+    }
+  }
+
   return (
     <>
       <section className="admin-summary">
         <div><small>ทรัพย์ทั้งหมด</small><strong>{counts.total}</strong></div>
+        <div><small>แสดงบนเว็บไซต์</small><strong>{counts.visible}</strong></div>
+        <div><small>ปิดการแสดง</small><strong>{counts.hidden}</strong></div>
         <div><small>พร้อมขาย</small><strong>{counts.active}</strong></div>
         <div><small>ติดจอง</small><strong>{counts.reserved}</strong></div>
         <div><small>ขายแล้ว</small><strong>{counts.sold}</strong></div>
@@ -203,17 +260,29 @@ export function AdminPropertyManager({ initialProperties }: { initialProperties:
               )}
             </span>
             <div className="admin-property-info">
-              <span className="admin-status" data-status={property.status ?? "active"}>
-                {statusLabels[property.status ?? "active"]}
-              </span>
+              <div className="admin-property-badges">
+                <span className="admin-status" data-status={property.status ?? "active"}>
+                  {statusLabels[property.status ?? "active"]}
+                </span>
+                <span className="admin-visibility" data-visible={property.visible !== false && property.status !== "hidden"}>
+                  {property.visible !== false && property.status !== "hidden" ? <><Eye /> แสดงบนเว็บไซต์</> : <><EyeOff /> ปิดการแสดง</>}
+                </span>
+              </div>
               <h3>{property.title}</h3>
               <p>{property.location}</p>
               <strong>{property.price}</strong>
             </div>
             <div className="admin-property-actions">
-              <Link href={`/properties/${property.id}`} target="_blank"><ExternalLink /> ดูหน้าเว็บ</Link>
+              {property.visible !== false && property.status !== "hidden" && <Link href={`/properties/${property.id}`} target="_blank"><ExternalLink /> ดูหน้าเว็บ</Link>}
               <Link href={`/admin/content?property=${property.id}`}><FileText /> ชุดโพสต์</Link>
               <button type="button" onClick={() => startEdit(property)}><Pencil /> แก้ไข</button>
+              <button type="button" onClick={() => void toggleVisibility(property)} disabled={actionId === property.id}>
+                {actionId === property.id ? <LoaderCircle className="spin" /> : property.visible !== false && property.status !== "hidden" ? <EyeOff /> : <Eye />}
+                {property.visible !== false && property.status !== "hidden" ? "ปิดแสดง" : "เปิดแสดง"}
+              </button>
+              <button type="button" className="admin-delete" onClick={() => void removeProperty(property)} disabled={actionId === property.id}>
+                <Trash2 /> ลบ
+              </button>
             </div>
           </article>
         ))}
@@ -236,7 +305,13 @@ export function AdminPropertyManager({ initialProperties }: { initialProperties:
               </label>
               <label>สถานะ *
                 <select value={editing.status} onChange={(event) => updateField("status", event.target.value as PropertyStatus)}>
-                  {Object.entries(statusLabels).map(([value, label]) => <option value={value} key={value}>{label}</option>)}
+                  {editableStatuses.map((value) => <option value={value} key={value}>{statusLabels[value]}</option>)}
+                </select>
+              </label>
+              <label>การแสดงบนเว็บไซต์
+                <select value={editing.visible === false ? "hidden" : "visible"} onChange={(event) => updateField("visible", event.target.value === "visible")}>
+                  <option value="visible">เปิดแสดง</option>
+                  <option value="hidden">ปิดการแสดง แต่เก็บข้อมูลไว้</option>
                 </select>
               </label>
               <label>ประเภททรัพย์ *

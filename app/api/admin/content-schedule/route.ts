@@ -70,7 +70,7 @@ export async function POST(request: Request) {
   const channel = text(payload.channel, 30) as ContentChannel;
   const requestedContentType = text(payload.contentType, 30) as ContentType;
   const date = scheduledFor(payload.scheduledFor);
-  const property = await getManagedProperty(propertyId);
+  const property = await getManagedProperty(propertyId, true);
 
   if (!property || property.status !== "active" || !channels.has(channel) || !date) {
     return Response.json(

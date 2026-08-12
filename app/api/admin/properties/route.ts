@@ -1,8 +1,10 @@
 import type { Property, PropertyStatus } from "../../../data/properties";
 import {
   createManagedProperty,
+  deleteManagedProperty,
   getManagedProperties,
   updateManagedProperty,
+  updateManagedPropertyVisibility,
 } from "../../../../db/managed-properties";
 import { isOwner } from "../../../admin-auth";
 
@@ -43,6 +45,7 @@ function parseProperty(payload: Record<string, unknown>): Property | null {
     map: text(payload.map, 500),
     images: list(payload.images),
     status: statuses.has(status) ? status : "active",
+    visible: typeof payload.visible === "boolean" ? payload.visible : true,
   };
 
   if (
@@ -95,4 +98,42 @@ export async function PUT(request: Request) {
   const { id, ...values } = property;
   await updateManagedProperty(id, values);
   return Response.json({ property });
+}
+
+export async function PATCH(request: Request) {
+  if (!(await isOwner())) {
+    return Response.json({ error: "ไม่มีสิทธิ์เข้าถึง" }, { status: 403 });
+  }
+  const payload = (await request.json()) as Record<string, unknown>;
+  const id = text(payload.id, 80).toLowerCase();
+  if (!/^[a-z0-9-]+$/.test(id) || typeof payload.visible !== "boolean") {
+    return Response.json({ error: "ข้อมูลการแสดงผลไม่ถูกต้อง" }, { status: 400 });
+  }
+  const property = await updateManagedPropertyVisibility(id, payload.visible);
+  if (!property) {
+    return Response.json({ error: "ไม่พบทรัพย์ที่ต้องการแก้ไข" }, { status: 404 });
+  }
+  return Response.json({ property });
+}
+
+export async function DELETE(request: Request) {
+  if (!(await isOwner())) {
+    return Response.json({ error: "ไม่มีสิทธิ์เข้าถึง" }, { status: 403 });
+  }
+  const payload = (await request.json()) as Record<string, unknown>;
+  const id = text(payload.id, 80).toLowerCase();
+  if (!/^[a-z0-9-]+$/.test(id)) {
+    return Response.json({ error: "รหัสทรัพย์ไม่ถูกต้อง" }, { status: 400 });
+  }
+  const result = await deleteManagedProperty(id);
+  if (result.status === "not_found") {
+    return Response.json({ error: "ไม่พบทรัพย์ที่ต้องการลบ" }, { status: 404 });
+  }
+  if (result.status === "has_inquiries") {
+    return Response.json(
+      { error: "ทรัพย์นี้มีข้อมูลผู้สนใจ จึงไม่ลบเพื่อป้องกันข้อมูลลูกค้าสูญหาย กรุณาปิดการแสดงแทน" },
+      { status: 409 },
+    );
+  }
+  return Response.json({ deleted: true, id });
 }

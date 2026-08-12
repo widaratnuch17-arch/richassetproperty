@@ -37,8 +37,14 @@ export const managedProperties = sqliteTable("managed_properties", {
   mapUrl: text("map_url").notNull().default(""),
   images: text("images").notNull().default("[]"),
   status: text("status").notNull().default("active"),
+  isVisible: integer("is_visible", { mode: "boolean" }).notNull().default(true),
   createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
   updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+});
+
+export const deletedProperties = sqliteTable("deleted_properties", {
+  id: text("id").primaryKey(),
+  deletedAt: text("deleted_at").notNull().default(sql`CURRENT_TIMESTAMP`),
 });
 
 export const propertyImages = sqliteTable(

@@ -235,7 +235,7 @@ export default async function AdminDashboardPage() {
             <p><span>พร้อมขาย</span><strong>{activeProperties.length}</strong></p>
             <p><span>ติดจอง</span><strong>{properties.filter((item) => item.status === "reserved").length}</strong></p>
             <p><span>ขายแล้ว</span><strong>{properties.filter((item) => item.status === "sold").length}</strong></p>
-            <p><span>ซ่อนรายการ</span><strong>{properties.filter((item) => item.status === "hidden").length}</strong></p>
+            <p><span>ปิดการแสดง</span><strong>{properties.filter((item) => item.visible === false || item.status === "hidden").length}</strong></p>
           </div>
           <Link className="admin-overview-link" href="/admin/properties">
             จัดการข้อมูลทรัพย์ <ArrowRight />
