@@ -503,9 +503,9 @@ export function HomePage({ initialProperties = properties }: { initialProperties
               บ้านมือสองที่เข้าใจทั้งคนซื้อและคนขาย
             </p>
             <h1>
-              ซื้อ–ขายบ้าน
-              <span>อย่างมั่นใจ</span>
-              ในทุกขั้นตอน
+              <span className="hero-title-line">ซื้อ–ขายบ้าน</span>
+              <span className="hero-title-line hero-title-line--accent">อย่างมั่นใจ</span>
+              <span className="hero-title-line hero-title-line--closing">ทุกขั้นตอน</span>
             </h1>
             <p className="hero-lead">
               เลือกบ้านด้วยข้อมูลที่ชัดเจน หรือฝากขายกับนุชคนเดียวที่ดูแล

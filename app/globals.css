@@ -358,13 +358,39 @@ img {
   line-height: 0.9;
 }
 
-.hero h1 span {
+.hero-title-line {
   display: block;
+  width: fit-content;
+  white-space: nowrap;
+}
+
+.hero-title-line--accent {
   background: linear-gradient(120deg, var(--blue) 0%, #0a70c7 55%, #65a9dd 100%);
   background-clip: text;
   color: transparent;
   background-size: 180% 100%;
   animation: title-sheen 7s ease-in-out 1.2s infinite;
+}
+
+.hero-title-line--closing {
+  position: relative;
+  margin-top: 0.08em;
+  padding-left: 0.92em;
+  color: #173b67;
+  font-size: 0.8em;
+  font-weight: 500;
+}
+
+.hero-title-line--closing::before {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 0.62em;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--sky);
+  content: "";
+  transform: translateY(-50%);
 }
 
 @keyframes title-sheen {
@@ -4862,8 +4888,9 @@ footer h2,
 }
 
 .hero h1 {
-  font-size: clamp(2.75rem, 6.2vw, 6.25rem);
-  line-height: 1.12;
+  max-width: 650px;
+  font-size: clamp(2.75rem, 5.7vw, 5.75rem);
+  line-height: 1.15;
 }
 
 .audience-heading h2,
@@ -4953,8 +4980,17 @@ footer h2 {
 
 @media (max-width: 600px) {
   .hero h1 {
-    font-size: clamp(2.65rem, 12vw, 3.75rem);
-    line-height: 1.14;
+    font-size: clamp(2.35rem, 11vw, 3.35rem);
+    line-height: 1.17;
+  }
+
+  .hero-title-line--closing {
+    padding-left: 0;
+    font-size: 0.84em;
+  }
+
+  .hero-title-line--closing::before {
+    display: none;
   }
 
   .audience-heading h2,
