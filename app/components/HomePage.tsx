@@ -25,7 +25,14 @@ import {
   Sparkles,
   X,
 } from "lucide-react";
-import { AnimatePresence, motion } from "framer-motion";
+import {
+  AnimatePresence,
+  motion,
+  useReducedMotion,
+  useScroll,
+  useSpring,
+  useTransform,
+} from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
@@ -240,13 +247,14 @@ function FadeUp({
   delay?: number;
   className?: string;
 }) {
+  const reduceMotion = useReducedMotion();
   return (
     <motion.div
       className={className}
-      initial={{ opacity: 0, y: 28 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={reduceMotion ? false : { opacity: 0, y: 34, filter: "blur(8px)" }}
+      whileInView={reduceMotion ? undefined : { opacity: 1, y: 0, filter: "blur(0px)" }}
       viewport={{ once: true, margin: "-60px" }}
-      transition={{ duration: 0.65, delay, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.78, delay, ease: [0.16, 1, 0.3, 1] }}
     >
       {children}
     </motion.div>
@@ -397,6 +405,11 @@ export function HomePage({ initialProperties = properties }: { initialProperties
   const [menuOpen, setMenuOpen] = useState(false);
   const [filter, setFilter] = useState<"ทั้งหมด" | Property["type"]>("ทั้งหมด");
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
+  const reduceMotion = useReducedMotion();
+  const { scrollYProgress } = useScroll();
+  const smoothProgress = useSpring(scrollYProgress, { stiffness: 90, damping: 24, mass: 0.28 });
+  const heroVisualY = useTransform(scrollYProgress, [0, 0.22], [0, reduceMotion ? 0 : 72]);
+  const heroCopyY = useTransform(scrollYProgress, [0, 0.18], [0, reduceMotion ? 0 : -28]);
 
   const filteredProperties = useMemo(
     () =>
@@ -408,9 +421,15 @@ export function HomePage({ initialProperties = properties }: { initialProperties
 
   return (
     <main>
+      <motion.div className="page-progress" style={{ scaleX: smoothProgress }} aria-hidden="true" />
       <a className="skip-link" href="#main-content">ข้ามไปยังเนื้อหาหลัก</a>
 
-      <header className="site-header">
+      <motion.header
+        className="site-header"
+        initial={reduceMotion ? false : { opacity: 0, y: -22, x: "-50%" }}
+        animate={{ opacity: 1, y: 0, x: "-50%" }}
+        transition={{ duration: 0.7, delay: 0.12, ease: [0.16, 1, 0.3, 1] }}
+      >
         <a className="brand" href="#top" aria-label="Rich Asset Property หน้าแรก">
           <Image
             src="/assets/brand-logo.svg"
@@ -466,7 +485,7 @@ export function HomePage({ initialProperties = properties }: { initialProperties
             </motion.nav>
           )}
         </AnimatePresence>
-      </header>
+      </motion.header>
 
       <section className="hero" id="top">
         <div className="hero-orb hero-orb--one" />
@@ -474,6 +493,7 @@ export function HomePage({ initialProperties = properties }: { initialProperties
         <div className="hero-content" id="main-content">
           <motion.div
             className="hero-copy"
+            style={{ y: heroCopyY }}
             initial={{ opacity: 0, y: 28 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
@@ -500,6 +520,7 @@ export function HomePage({ initialProperties = properties }: { initialProperties
 
           <motion.div
             className="hero-visual"
+            style={{ y: heroVisualY }}
             initial={{ opacity: 0, scale: 0.96, y: 24 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 0.85, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}

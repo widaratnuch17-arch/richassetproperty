@@ -14,6 +14,7 @@
   --radius-lg: 36px;
   --radius-md: 24px;
   --shadow: 0 22px 70px rgba(6, 63, 140, 0.14);
+  --ease-premium: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 * {
@@ -32,6 +33,30 @@ body {
   color: var(--ink);
   font-family: var(--font-kanit), "Noto Sans Thai", sans-serif;
   overflow-x: hidden;
+}
+
+body::before {
+  position: fixed;
+  z-index: 999;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 16% 14%, rgba(166, 207, 242, 0.055), transparent 28%),
+    radial-gradient(circle at 84% 72%, rgba(6, 63, 140, 0.035), transparent 32%);
+  content: "";
+  mix-blend-mode: multiply;
+}
+
+.page-progress {
+  position: fixed;
+  z-index: 1100;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--sky), #2f87d4 54%, var(--blue));
+  box-shadow: 0 0 16px rgba(47, 135, 212, 0.45);
+  transform-origin: 0 50%;
 }
 
 body:has(.modal-backdrop) {
@@ -109,6 +134,12 @@ img {
   width: 46px;
   height: 46px;
   object-fit: contain;
+  transition: transform 0.7s var(--ease-premium), filter 0.4s ease;
+}
+
+.brand:hover img {
+  filter: drop-shadow(0 8px 14px rgba(6, 63, 140, 0.18));
+  transform: rotate(-4deg) scale(1.06);
 }
 
 .brand span {
@@ -173,12 +204,14 @@ img {
   font-size: 0.86rem;
   font-weight: 600;
   letter-spacing: 0.06em;
-  transition: transform 0.2s ease, background 0.2s ease;
+  overflow: hidden;
+  transition: transform 0.35s var(--ease-premium), background 0.2s ease, box-shadow 0.35s ease;
 }
 
 .header-line:hover {
   background: var(--blue-deep);
   transform: translateY(-2px);
+  box-shadow: 0 14px 28px rgba(6, 63, 140, 0.25);
 }
 
 .menu-button {
@@ -242,6 +275,11 @@ img {
   background-size: 68px 68px;
   content: "";
   mask-image: linear-gradient(to bottom, black, transparent 84%);
+  animation: hero-grid-drift 22s linear infinite;
+}
+
+@keyframes hero-grid-drift {
+  to { background-position: 68px 68px; }
 }
 
 .hero-orb {
@@ -256,6 +294,7 @@ img {
   width: 360px;
   height: 360px;
   border: 1px solid rgba(6, 63, 140, 0.12);
+  animation: orb-float 10s ease-in-out infinite;
 }
 
 .hero-orb--two {
@@ -264,6 +303,12 @@ img {
   width: 520px;
   height: 520px;
   background: rgba(166, 207, 242, 0.15);
+  animation: orb-float 13s ease-in-out -3s infinite reverse;
+}
+
+@keyframes orb-float {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(-18px, -22px, 0) scale(1.045); }
 }
 
 .hero-content {
@@ -314,6 +359,13 @@ img {
   background: linear-gradient(120deg, var(--blue) 0%, #0a70c7 55%, #65a9dd 100%);
   background-clip: text;
   color: transparent;
+  background-size: 180% 100%;
+  animation: title-sheen 7s ease-in-out 1.2s infinite;
+}
+
+@keyframes title-sheen {
+  0%, 72%, 100% { background-position: 0% 50%; }
+  86% { background-position: 100% 50%; }
 }
 
 .hero-lead {
@@ -348,7 +400,29 @@ img {
   font-size: 0.93rem;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition: transform 0.35s var(--ease-premium), box-shadow 0.35s ease, background 0.2s ease;
+}
+
+.button::after,
+.header-line::after {
+  position: absolute;
+  top: -80%;
+  left: -45%;
+  width: 34%;
+  height: 260%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.34), transparent);
+  content: "";
+  pointer-events: none;
+  transform: rotate(18deg) translateX(-220%);
+  transition: transform 0.8s var(--ease-premium);
+}
+
+.button:hover::after,
+.header-line:hover::after {
+  transform: rotate(18deg) translateX(620%);
 }
 
 .button:hover {
@@ -430,6 +504,15 @@ img {
   object-fit: cover;
 }
 
+.hero-house img {
+  animation: cinematic-push 16s ease-in-out infinite alternate;
+}
+
+@keyframes cinematic-push {
+  from { transform: scale(1.01); }
+  to { transform: scale(1.075) translate3d(-0.8%, -0.5%, 0); }
+}
+
 .hero-house-label {
   position: absolute;
   z-index: 2;
@@ -471,6 +554,12 @@ img {
   overflow: hidden;
   border-radius: 160px 160px 38px 38px;
   box-shadow: 0 24px 60px rgba(0, 24, 62, 0.2);
+  transition: transform 0.8s var(--ease-premium), box-shadow 0.8s ease;
+}
+
+.hero-visual:hover .nuch-cutout {
+  box-shadow: 0 34px 82px rgba(0, 24, 62, 0.28);
+  transform: translateY(-8px) rotate(0.5deg);
 }
 
 .nuch-cutout img {
@@ -492,6 +581,123 @@ img {
   background: rgba(255, 255, 255, 0.89);
   box-shadow: 0 12px 34px rgba(2, 26, 59, 0.12);
   backdrop-filter: blur(12px);
+  animation: badge-breathe 5s ease-in-out infinite;
+}
+
+@keyframes badge-breathe {
+  0%, 100% { transform: translateY(0); box-shadow: 0 12px 34px rgba(2, 26, 59, 0.12); }
+  50% { transform: translateY(-7px); box-shadow: 0 19px 42px rgba(2, 26, 59, 0.17); }
+}
+
+/* Premium motion polish: tactile depth without distracting from property information. */
+.trust-strip > div,
+.audience-card,
+.audience-icon,
+.area-chips span,
+.property-card,
+.image-arrow,
+.buyer-support-list > div,
+.about-image,
+.about-caption,
+.service-row,
+.service-icon,
+.service-photo,
+.success-card,
+.seller-card,
+.listing-lead-form,
+.faq-list details {
+  transform: translateZ(0);
+  transition-duration: 0.5s;
+  transition-timing-function: var(--ease-premium);
+}
+
+.trust-strip > div:hover {
+  background: rgba(255, 255, 255, 0.07);
+  transform: translateY(-3px);
+}
+
+.audience-card:hover {
+  transform: translateY(-8px);
+}
+
+.audience-card--buyer:hover {
+  box-shadow: 0 28px 70px rgba(21, 48, 80, 0.13);
+}
+
+.audience-card--seller:hover {
+  box-shadow: 0 32px 80px rgba(6, 63, 140, 0.3);
+}
+
+.audience-card:hover .audience-icon {
+  transform: rotate(-5deg) scale(1.08);
+}
+
+.area-chips span:hover {
+  background: var(--blue);
+  color: var(--white);
+  transform: translateY(-3px);
+}
+
+.property-card:hover {
+  border-color: rgba(6, 63, 140, 0.22);
+  transform: translateY(-9px) scale(1.008);
+}
+
+.property-card:hover .image-arrow {
+  background: var(--blue-deep);
+  transform: rotate(-8deg) scale(1.08);
+}
+
+.buyer-support-list > div:hover {
+  border-color: rgba(255, 255, 255, 0.36);
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateX(9px);
+}
+
+.about-image-wrap:hover .about-image {
+  transform: scale(1.012);
+}
+
+.about-image-wrap:hover .about-caption {
+  transform: translateY(-8px);
+}
+
+.service-row:hover {
+  padding-right: 14px;
+  padding-left: 14px;
+  background: linear-gradient(90deg, rgba(234, 242, 251, 0.75), transparent);
+}
+
+.service-row:hover .service-icon {
+  background: var(--blue);
+  color: var(--white);
+  transform: rotate(-5deg) scale(1.08);
+}
+
+.service-photo img,
+.success-card img {
+  transition: transform 1s var(--ease-premium), filter 0.7s ease;
+}
+
+.service-photo:hover img,
+.success-card:hover img {
+  filter: saturate(1.06) contrast(1.03);
+  transform: scale(1.055);
+}
+
+.success-card:hover {
+  transform: translateY(-10px);
+}
+
+.seller-card:hover,
+.listing-lead-form:hover {
+  box-shadow: 0 34px 100px rgba(6, 63, 140, 0.18);
+  transform: translateY(-4px);
+}
+
+.faq-list details:hover {
+  background: rgba(234, 242, 251, 0.56);
+  transform: translateX(5px);
 }
 
 .hero-badge > svg {
@@ -4642,6 +4848,21 @@ footer .button--ghost {
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
   }
+
+  .hero-copy,
+  .hero-visual,
+  .hero-house img,
+  .hero-badge,
+  .hero-orb,
+  .audience-card:hover,
+  .property-card:hover,
+  .buyer-support-list > div:hover,
+  .success-card:hover,
+  .seller-card:hover,
+  .listing-lead-form:hover,
+  .faq-list details:hover {
+    transform: none !important;
+  }
 }
 
 .admin-login-page {
@@ -6135,6 +6356,7 @@ footer .button--ghost {
   justify-content: center;
   gap: 5px;
   border: 1px solid rgba(6, 63, 140, 0.12);
+  animation: orb-float 10s ease-in-out infinite;
   border-radius: 9px;
   background: var(--white);
   color: var(--blue);
