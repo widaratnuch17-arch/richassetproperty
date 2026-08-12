@@ -74,3 +74,52 @@ export const contentSchedule = sqliteTable(
     index("idx_content_schedule_property_id").on(table.propertyId),
   ],
 );
+
+export const propertyEvents = sqliteTable(
+  "property_events",
+  {
+    id: text("id").primaryKey(),
+    propertyId: text("property_id")
+      .notNull()
+      .references(() => managedProperties.id, { onDelete: "cascade" }),
+    eventType: text("event_type").notNull(),
+    source: text("source").notNull().default("direct"),
+    medium: text("medium"),
+    campaign: text("campaign"),
+    referrerHost: text("referrer_host"),
+    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [
+    index("idx_property_events_property_created_at").on(table.propertyId, table.createdAt),
+    index("idx_property_events_type_created_at").on(table.eventType, table.createdAt),
+    index("idx_property_events_source_created_at").on(table.source, table.createdAt),
+  ],
+);
+
+export const propertyInquiries = sqliteTable(
+  "property_inquiries",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    propertyId: text("property_id")
+      .notNull()
+      .references(() => managedProperties.id, { onDelete: "cascade" }),
+    fullName: text("full_name").notNull(),
+    phone: text("phone").notNull(),
+    lineId: text("line_id"),
+    message: text("message"),
+    source: text("source").notNull().default("direct"),
+    medium: text("medium"),
+    campaign: text("campaign"),
+    status: text("status").notNull().default("new"),
+    adminNotes: text("admin_notes"),
+    nextFollowUp: text("next_follow_up"),
+    consent: integer("consent", { mode: "boolean" }).notNull().default(true),
+    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+    updatedAt: text("updated_at"),
+  },
+  (table) => [
+    index("idx_property_inquiries_property_created_at").on(table.propertyId, table.createdAt),
+    index("idx_property_inquiries_status_created_at").on(table.status, table.createdAt),
+    index("idx_property_inquiries_source_created_at").on(table.source, table.createdAt),
+  ],
+);

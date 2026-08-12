@@ -23,7 +23,12 @@ export function PropertyShareButton({ title }: { title: string }) {
   }
 
   return (
-    <button type="button" className="property-share" onClick={shareProperty}>
+    <button
+      type="button"
+      className="property-share"
+      onClick={shareProperty}
+      data-property-event="share_click"
+    >
       {copied ? <Check /> : <Share2 />}
       {copied ? "คัดลอกลิงก์แล้ว" : "แชร์ทรัพย์นี้"}
     </button>

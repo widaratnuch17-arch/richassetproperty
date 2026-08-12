@@ -17,6 +17,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PropertyShareButton } from "../../components/PropertyShareButton";
+import { PropertyAnalytics } from "../../components/PropertyAnalytics";
+import { PropertyInquiryForm } from "../../components/PropertyInquiryForm";
 import { getManagedProperties, getManagedProperty } from "../../../db/managed-properties";
 
 const PHONE = "061-359-1699";
@@ -64,6 +66,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
 
   return (
     <main className="property-detail-page">
+      <PropertyAnalytics propertyId={property.id} />
       <header className="property-detail-header">
         <Link className="property-detail-brand" href="/">
           <Image src="/assets/brand-logo.svg" alt="Rich Asset Property" width={54} height={54} />
@@ -153,13 +156,24 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
             สอบถามสถานะล่าสุด รายละเอียดเพิ่มเติม นัดชมบ้าน
             หรือปรึกษาความพร้อมด้านสินเชื่อได้โดยตรง
           </p>
-          <a className="button button--primary" href={LINE_URL} target="_blank" rel="noreferrer">
+          <a
+            className="button button--primary"
+            href={LINE_URL}
+            target="_blank"
+            rel="noreferrer"
+            data-property-event="line_click"
+          >
             <MessageCircle /> สอบถามทาง LINE
           </a>
-          <a className="button button--ghost" href={`tel:${PHONE.replaceAll("-", "")}`}>
+          <a
+            className="button button--ghost"
+            href={`tel:${PHONE.replaceAll("-", "")}`}
+            data-property-event="phone_click"
+          >
             <Phone /> {PHONE}
           </a>
           <small>แจ้งชื่อโครงการหรือส่งลิงก์หน้านี้ให้นุชได้เลย</small>
+          <PropertyInquiryForm propertyId={property.id} propertyTitle={property.title} />
         </aside>
       </section>
 
