@@ -3,7 +3,7 @@
 import { Check, ExternalLink, FileText, ImagePlus, LoaderCircle, Pencil, Plus, Save, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useMemo, useRef, useState } from "react";
 import type { Property, PropertyStatus } from "../data/properties";
 
 const emptyProperty: Property = {
@@ -32,6 +32,39 @@ const statusLabels: Record<PropertyStatus, string> = {
   hidden: "ซ่อนรายการ",
 };
 
+const MAX_SOURCE_IMAGE_SIZE = 8 * 1024 * 1024;
+const TARGET_IMAGE_SIZE = 1_100_000;
+
+function canvasBlob(canvas: HTMLCanvasElement, quality: number) {
+  return new Promise<Blob>((resolve, reject) => {
+    canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error("ไม่สามารถปรับขนาดรูปได้")), "image/webp", quality);
+  });
+}
+
+async function optimizeImage(file: File) {
+  if (file.size > MAX_SOURCE_IMAGE_SIZE) throw new Error(`รูป ${file.name} มีขนาดเกิน 8 MB`);
+  if (file.size <= TARGET_IMAGE_SIZE) return file;
+
+  const bitmap = await createImageBitmap(file);
+  const maxSide = 1800;
+  const ratio = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.max(1, Math.round(bitmap.width * ratio));
+  canvas.height = Math.max(1, Math.round(bitmap.height * ratio));
+  const context = canvas.getContext("2d");
+  if (!context) { bitmap.close(); throw new Error("เบราว์เซอร์ไม่สามารถปรับรูปนี้ได้"); }
+  context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  bitmap.close();
+
+  let blob = await canvasBlob(canvas, .82);
+  for (const quality of [.72, .62, .52]) {
+    if (blob.size <= TARGET_IMAGE_SIZE) break;
+    blob = await canvasBlob(canvas, quality);
+  }
+  if (blob.size > 1_250_000) throw new Error(`รูป ${file.name} ยังมีขนาดใหญ่เกินไป กรุณาลดขนาดรูปแล้วลองใหม่`);
+  return new File([blob], file.name.replace(/\.[^.]+$/, "") + ".webp", { type: "image/webp" });
+}
+
 export function AdminPropertyManager({ initialProperties }: { initialProperties: Property[] }) {
   const [properties, setProperties] = useState(initialProperties);
   const [editing, setEditing] = useState<Property | null>(null);
@@ -40,6 +73,7 @@ export function AdminPropertyManager({ initialProperties }: { initialProperties:
   const [uploading, setUploading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const feedbackRef = useRef<HTMLDivElement>(null);
 
   const counts = useMemo(
     () => ({
@@ -73,9 +107,13 @@ export function AdminPropertyManager({ initialProperties }: { initialProperties:
     if (!files || !editing) return;
     setUploading(true);
     setError("");
+    setMessage("");
     try {
       const uploaded: string[] = [];
-      for (const file of Array.from(files).slice(0, 12)) {
+      const selected = Array.from(files).slice(0, 12);
+      for (let index = 0; index < selected.length; index += 1) {
+        setMessage(`กำลังปรับและอัปโหลดรูป ${index + 1}/${selected.length}`);
+        const file = await optimizeImage(selected[index]);
         const body = new FormData();
         body.append("file", file);
         const response = await fetch("/api/admin/property-images", { method: "POST", body });
@@ -84,8 +122,10 @@ export function AdminPropertyManager({ initialProperties }: { initialProperties:
         uploaded.push(result.url);
       }
       updateField("images", [...editing.images, ...uploaded]);
+      setMessage(`อัปโหลดรูปสำเร็จ ${uploaded.length} รูป`);
     } catch (uploadError) {
       setError(uploadError instanceof Error ? uploadError.message : "อัปโหลดรูปไม่สำเร็จ");
+      window.setTimeout(() => feedbackRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }), 0);
     } finally {
       setUploading(false);
     }
@@ -94,6 +134,17 @@ export function AdminPropertyManager({ initialProperties }: { initialProperties:
   async function saveProperty(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!editing) return;
+    const form = event.currentTarget;
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+    if (editing.images.length === 0) {
+      setError("กรุณาเลือกรูปทรัพย์อย่างน้อย 1 รูปก่อนบันทึก");
+      setMessage("");
+      window.setTimeout(() => feedbackRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }), 0);
+      return;
+    }
     setSaving(true);
     setError("");
     setMessage("");
@@ -115,6 +166,7 @@ export function AdminPropertyManager({ initialProperties }: { initialProperties:
       setEditing(null);
     } catch (saveError) {
       setError(saveError instanceof Error ? saveError.message : "บันทึกไม่สำเร็จ");
+      window.setTimeout(() => feedbackRef.current?.scrollIntoView({ behavior: "smooth", block: "center" }), 0);
     } finally {
       setSaving(false);
     }
@@ -230,12 +282,17 @@ export function AdminPropertyManager({ initialProperties }: { initialProperties:
 
             <div className="admin-images">
               <div className="admin-images-head">
-                <div><strong>รูปทรัพย์ *</strong><small>รูปแรกใช้เป็นภาพปก รองรับ JPG, PNG, WebP ไม่เกิน 8 MB</small></div>
+                <div><strong>รูปทรัพย์ *</strong><small>รูปแรกใช้เป็นภาพปก รองรับ JPG, PNG, WebP ไม่เกิน 8 MB ระบบจะปรับขนาดให้อัตโนมัติ</small></div>
                 <label className="admin-upload-button">
                   {uploading ? <LoaderCircle className="spin" /> : <ImagePlus />}
                   {uploading ? "กำลังอัปโหลด" : "เลือกรูป"}
-                  <input type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={(event) => uploadImages(event.target.files)} disabled={uploading} />
+                  <input type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={(event) => { void uploadImages(event.currentTarget.files); event.currentTarget.value = ""; }} disabled={uploading} />
                 </label>
+              </div>
+              <div className="admin-editor-feedback" ref={feedbackRef} aria-live="polite">
+                {uploading && <p>กำลังอัปโหลดรูป กรุณารอสักครู่...</p>}
+                {message && <p className="admin-message"><Check /> {message}</p>}
+                {error && <p className="admin-error">{error}</p>}
               </div>
               <div className="admin-image-grid">
                 {editing.images.map((image, index) => (
@@ -254,6 +311,7 @@ export function AdminPropertyManager({ initialProperties }: { initialProperties:
                 {saving ? <LoaderCircle className="spin" /> : <Save />} {saving ? "กำลังบันทึก" : "บันทึกข้อมูลทรัพย์"}
               </button>
             </div>
+            <small className="admin-save-hint">ต้องอัปโหลดรูปสำเร็จอย่างน้อย 1 รูปก่อน จึงจะบันทึกข้อมูลทรัพย์ได้</small>
           </form>
         </div>
       )}

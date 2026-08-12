@@ -5462,6 +5462,11 @@ footer .button--ghost {
   margin-top: 5px;
   font-size: 0.66rem;
 }
+.admin-editor-feedback { min-height: 1.25rem; }
+.admin-editor-feedback > p { margin: .65rem 0 0; }
+.admin-editor-feedback .admin-message,
+.admin-editor-feedback .admin-error { position: static; width: 100%; }
+.admin-save-hint { display: block; margin: .55rem 0 0; color: #6d7772; text-align: right; }
 
 .business-goal-panel {
   width: min(1480px, calc(100% - 2rem));

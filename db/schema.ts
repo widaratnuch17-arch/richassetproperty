@@ -41,6 +41,18 @@ export const managedProperties = sqliteTable("managed_properties", {
   updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
 });
 
+export const propertyImages = sqliteTable(
+  "property_images",
+  {
+    id: text("id").primaryKey(),
+    mimeType: text("mime_type").notNull(),
+    data: text("data").notNull(),
+    size: integer("size").notNull(),
+    createdAt: text("created_at").notNull().default(sql`CURRENT_TIMESTAMP`),
+  },
+  (table) => [index("idx_property_images_created_at").on(table.createdAt)],
+);
+
 export const adminLoginAttempts = sqliteTable("admin_login_attempts", {
   key: text("key").primaryKey(),
   attempts: integer("attempts").notNull().default(0),

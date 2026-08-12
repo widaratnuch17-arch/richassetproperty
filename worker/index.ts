@@ -5,7 +5,6 @@ import handler from "vinext/server/app-router-entry";
 interface Env {
   ASSETS: Fetcher;
   DB: D1Database;
-  PROPERTY_IMAGES?: R2Bucket;
   IMAGES: {
     input(stream: ReadableStream): {
       transform(options: Record<string, unknown>): {
@@ -47,16 +46,23 @@ const worker = {
     const url = new URL(request.url);
 
     if (url.pathname.startsWith("/property-images/")) {
-      if (!env.PROPERTY_IMAGES) return new Response("Not found", { status: 404 });
       const key = decodeURIComponent(url.pathname.slice("/property-images/".length));
-      if (!key || key.includes("..")) return new Response("Not found", { status: 404 });
-      const object = await env.PROPERTY_IMAGES.get(key);
-      if (!object) return new Response("Not found", { status: 404 });
-      const headers = new Headers();
-      object.writeHttpMetadata(headers);
-      headers.set("etag", object.httpEtag);
-      headers.set("cache-control", "public, max-age=31536000, immutable");
-      return new Response(object.body, { headers });
+      if (!/^[a-f0-9-]{36}\.(jpg|png|webp)$/.test(key)) return new Response("Not found", { status: 404 });
+      const row = await env.DB
+        .prepare("SELECT mime_type, data, size FROM property_images WHERE id = ? LIMIT 1")
+        .bind(key)
+        .first<{ mime_type: string; data: string; size: number }>();
+      if (!row) return new Response("Not found", { status: 404 });
+      const binary = atob(row.data);
+      const bytes = Uint8Array.from(binary, (character) => character.charCodeAt(0));
+      return new Response(bytes, {
+        headers: {
+          "content-type": row.mime_type,
+          "content-length": String(row.size),
+          "cache-control": "public, max-age=31536000, immutable",
+          "x-content-type-options": "nosniff",
+        },
+      });
     }
 
     if (url.pathname === "/_vinext/image") {
