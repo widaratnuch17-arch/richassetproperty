@@ -26,6 +26,7 @@ export default async function AdminPropertiesPage() {
         <nav>
           <Link href="/admin">ภาพรวมงาน</Link>
           <Link href="/admin/leads">ลูกค้าฝากขาย</Link>
+          <Link href="/admin/buyers">ผู้ซื้อกำลังหา</Link>
           <Link href="/admin/content">ชุดโพสต์</Link>
           <Link href="/admin/schedule">คิวคอนเทนต์</Link>
           <Link href="/admin/reports">รายงาน</Link>

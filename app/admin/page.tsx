@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { adminSignOutPath, requireOwner } from "../admin-auth";
+import { getBuyerRequests } from "../../db/buyer-requests";
 import { getListingLeads } from "../../db/listing-leads";
 import { getManagedProperties } from "../../db/managed-properties";
 import { getPropertyInquiries } from "../../db/property-analytics";
@@ -52,10 +53,11 @@ function lineUrl(lineId: string) {
 
 export default async function AdminDashboardPage() {
   const user = await requireOwner("/admin");
-  const [leads, properties, buyerLeads] = await Promise.all([
+  const [leads, properties, buyerLeads, buyerRequests] = await Promise.all([
     getListingLeads(),
     getManagedProperties(true),
     getPropertyInquiries(),
+    getBuyerRequests(),
   ]);
   const today = bangkokToday();
   const openLeads = leads.filter((lead) => !["won", "closed"].includes(lead.status));
@@ -87,6 +89,10 @@ export default async function AdminDashboardPage() {
   const buyerNew = openBuyerLeads.filter((lead) => lead.status === "new");
   const buyerOverdue = openBuyerLeads.filter((lead) => lead.nextFollowUp && lead.nextFollowUp.slice(0, 10) < today);
   const buyerDueToday = openBuyerLeads.filter((lead) => lead.nextFollowUp?.slice(0, 10) === today);
+  const openBuyerRequests = buyerRequests.filter((lead) => !["won", "closed"].includes(lead.status));
+  const buyerRequestNew = openBuyerRequests.filter((lead) => lead.status === "new");
+  const buyerRequestOverdue = openBuyerRequests.filter((lead) => lead.nextFollowUp && lead.nextFollowUp.slice(0, 10) < today);
+  const buyerRequestDueToday = openBuyerRequests.filter((lead) => lead.nextFollowUp?.slice(0, 10) === today);
   const propertyById = new Map(properties.map((property) => [property.id, property]));
   const buyerActions = openBuyerLeads
     .filter((lead) => lead.status === "new" || Boolean(lead.nextFollowUp && lead.nextFollowUp.slice(0, 10) <= today))
@@ -95,19 +101,26 @@ export default async function AdminDashboardPage() {
       detail: propertyById.get(lead.propertyId)?.title ?? lead.propertyId, nextFollowUp: lead.nextFollowUp,
       isNew: lead.status === "new", href: "/admin/reports#buyer-pipeline",
     }));
+  const buyerRequestActions = openBuyerRequests
+    .filter((lead) => lead.status === "new" || Boolean(lead.nextFollowUp && lead.nextFollowUp.slice(0, 10) <= today))
+    .map((lead) => ({
+      key: `buyer-request-${lead.id}`, type: "ผู้ซื้อกำลังหา", fullName: lead.fullName, phone: lead.phone, lineId: lead.lineId,
+      detail: `${lead.propertyType} · ${lead.preferredLocations}`, nextFollowUp: lead.nextFollowUp,
+      isNew: lead.status === "new", href: "/admin/buyers?filter=attention",
+    }));
   const sellerActions = actionLeads.map((lead) => ({
     key: `seller-${lead.id}`, type: "ฝากขาย", fullName: lead.fullName, phone: lead.phone, lineId: lead.lineId,
     detail: `${lead.propertyType} · ${lead.location}`, nextFollowUp: lead.nextFollowUp,
     isNew: lead.status === "new", href: "/admin/leads?filter=attention",
   }));
-  const combinedActions = [...buyerActions, ...sellerActions]
+  const combinedActions = [...buyerRequestActions, ...buyerActions, ...sellerActions]
     .sort((a, b) => Number(b.isNew) - Number(a.isNew) || (a.nextFollowUp ?? "").localeCompare(b.nextFollowUp ?? ""))
     .slice(0, 10);
   const currentYear = today.slice(0, 4);
   const currentMonth = today.slice(0, 7);
-  const closedThisYear = buyerLeads.filter((lead) => lead.status === "won" && lead.closedAt?.slice(0, 4) === currentYear);
+  const closedThisYear = [...buyerLeads, ...buyerRequests].filter((lead) => lead.status === "won" && lead.closedAt?.slice(0, 4) === currentYear);
   const closedThisMonth = closedThisYear.filter((lead) => lead.closedAt?.slice(0, 7) === currentMonth);
-  const total = (items: typeof buyerLeads, field: "salePrice" | "commissionIncome" | "dealExpenses") =>
+  const total = (items: typeof closedThisYear, field: "salePrice" | "commissionIncome" | "dealExpenses") =>
     items.reduce((sum, item) => sum + (item[field] ?? 0), 0);
   const annualSales = total(closedThisYear, "salePrice");
   const annualCommission = total(closedThisYear, "commissionIncome");
@@ -126,6 +139,7 @@ export default async function AdminDashboardPage() {
         </div>
         <nav>
           <Link href="/admin/leads">ลูกค้าฝากขาย</Link>
+          <Link href="/admin/buyers">ผู้ซื้อกำลังหา</Link>
           <Link href="/admin/properties">จัดการทรัพย์</Link>
           <Link href="/admin/content">ชุดโพสต์</Link>
           <Link href="/admin/schedule">คิวคอนเทนต์</Link>
@@ -138,15 +152,15 @@ export default async function AdminDashboardPage() {
       <section className="admin-summary admin-dashboard-summary">
         <Link href="/admin/leads?filter=attention" data-tone="blue">
           <UserRoundPlus />
-          <span><small>ลีดใหม่ทั้งหมด</small><strong>{newLeads.length + buyerNew.length}</strong></span>
+          <span><small>ลีดใหม่ทั้งหมด</small><strong>{newLeads.length + buyerNew.length + buyerRequestNew.length}</strong></span>
         </Link>
         <Link href="/admin/leads?filter=attention" data-tone="red">
           <AlertCircle />
-          <span><small>เลยวันติดตาม</small><strong>{overdueLeads.length + buyerOverdue.length}</strong></span>
+          <span><small>เลยวันติดตาม</small><strong>{overdueLeads.length + buyerOverdue.length + buyerRequestOverdue.length}</strong></span>
         </Link>
         <Link href="/admin/leads?filter=attention" data-tone="amber">
           <CalendarClock />
-          <span><small>ต้องติดตามวันนี้</small><strong>{dueTodayLeads.length + buyerDueToday.length}</strong></span>
+          <span><small>ต้องติดตามวันนี้</small><strong>{dueTodayLeads.length + buyerDueToday.length + buyerRequestDueToday.length}</strong></span>
         </Link>
         <Link href="/admin/properties" data-tone="green">
           <House />

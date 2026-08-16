@@ -6,6 +6,7 @@ import {
   Bath,
   BedDouble,
   Building2,
+  CalendarClock,
   CarFront,
   Check,
   ChevronDown,
@@ -36,6 +37,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { BuyerRequestForm } from "./BuyerRequestForm";
 import { ListingLeadForm } from "./ListingLeadForm";
 
 const PHONE = "061-359-1699";
@@ -232,6 +234,7 @@ const faqs = [
 
 const navItems = [
   { label: "ทรัพย์เด่น", href: "#properties" },
+  { label: "ช่วยหาบ้าน", href: "#buyer-request" },
   { label: "ฝากขาย", href: "#sell" },
   { label: "บริการ", href: "#services" },
   { label: "ผลงาน", href: "#success" },
@@ -814,8 +817,8 @@ export function HomePage({ initialProperties = properties }: { initialProperties
             บ้านที่ใช่ไม่ได้ดูแค่รูปสวย นุชช่วยให้คุณเห็นข้อมูลของตัวทรัพย์
             ความพร้อมด้านสินเชื่อ และขั้นตอนที่ต้องวางแผนก่อนเดินหน้าซื้อ
           </p>
-          <a className="buyer-support-cta" href={LINE_URL} target="_blank" rel="noreferrer">
-            <MessageCircle /> บอกนุชว่ากำลังมองหาบ้านแบบไหน
+          <a className="buyer-support-cta" href="#buyer-request">
+            <MessageCircle /> ฝากความต้องการซื้อให้นุชช่วยค้นหา
           </a>
         </FadeUp>
 
@@ -833,6 +836,26 @@ export function HomePage({ initialProperties = properties }: { initialProperties
             <p><strong>เข้าใจขั้นตอนและเอกสาร</strong><small>เห็นภาพกระบวนการตั้งแต่เจรจาจนถึงวันโอน</small></p>
           </FadeUp>
         </div>
+      </section>
+
+      <section className="buyer-request-section motion-section" id="buyer-request">
+        <FadeUp className="buyer-request-copy">
+          <p className="section-kicker">บริการสำหรับผู้ซื้อ</p>
+          <h2>บอกบ้านที่ต้องการ<br />ให้นุชช่วยคัดให้</h2>
+          <p>
+            ไม่ต้องเสียเวลาไล่ดูทุกประกาศ เพียงแจ้งทำเล งบประมาณ และช่วงเวลาที่ต้องการซื้อ
+            นุชจะช่วยคัดกรองทรัพย์ ตรวจข้อมูลเบื้องต้น และประสานนัดชมให้เป็นขั้นตอน
+          </p>
+          <div className="buyer-request-benefits">
+            <p><Check /><span><strong>คัดตามเงื่อนไขจริง</strong><small>เน้นทำเล งบ และรูปแบบบ้านที่คุณต้องการ</small></span></p>
+            <p><ShieldCheck /><span><strong>ช่วยวางแผนสินเชื่อ</strong><small>เช็กความพร้อมก่อนนัดชมและยื่นกู้</small></span></p>
+            <p><CalendarClock /><span><strong>นัดชมอย่างมีแผน</strong><small>ลดการเดินทางไปดูทรัพย์ที่ไม่ตรงโจทย์</small></span></p>
+          </div>
+          <small className="buyer-request-note">การส่งข้อมูลยังไม่ผูกมัดให้ซื้อทรัพย์ และไม่มีค่าใช้จ่ายในการให้ช่วยค้นหา</small>
+        </FadeUp>
+        <FadeUp delay={0.08}>
+          <BuyerRequestForm />
+        </FadeUp>
       </section>
 
       <section className="about-section motion-section" id="about">

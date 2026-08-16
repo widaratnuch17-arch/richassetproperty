@@ -31,6 +31,7 @@ export default async function AdminLeadsPage({ searchParams }: AdminLeadsPagePro
         </div>
         <nav>
           <Link href="/admin">ภาพรวมงาน</Link>
+          <Link href="/admin/buyers">ผู้ซื้อกำลังหา</Link>
           <Link href="/admin/properties">จัดการทรัพย์</Link>
           <Link href="/admin/content">ชุดโพสต์</Link>
           <Link href="/admin/schedule">คิวคอนเทนต์</Link>
