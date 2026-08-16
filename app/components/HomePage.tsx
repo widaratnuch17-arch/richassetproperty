@@ -492,6 +492,20 @@ export function HomePage({ initialProperties = properties }: { initialProperties
     return () => document.removeEventListener("keydown", closeMenu);
   }, [menuOpen]);
 
+  useEffect(() => {
+    const hash = window.location.hash.slice(1);
+    if (!hash) return;
+
+    const target = document.getElementById(decodeURIComponent(hash));
+    if (!target) return;
+
+    const frame = window.requestAnimationFrame(() => {
+      target.scrollIntoView({ behavior: "auto", block: "start" });
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
+
   return (
     <main>
       <motion.div className="page-progress" style={{ scaleX: smoothProgress }} aria-hidden="true" />
