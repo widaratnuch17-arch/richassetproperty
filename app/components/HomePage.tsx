@@ -251,10 +251,10 @@ function FadeUp({
   return (
     <motion.div
       className={className}
-      initial={reduceMotion ? false : { opacity: 0, y: 38, scale: 0.982, filter: "blur(9px)" }}
+      initial={reduceMotion ? false : { opacity: 0, y: 30, scale: 0.988, filter: "blur(6px)" }}
       whileInView={reduceMotion ? undefined : { opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
       viewport={{ once: true, margin: "-60px" }}
-      transition={{ duration: 0.82, delay, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: 0.72, delay, ease: [0.16, 1, 0.3, 1] }}
     >
       {children}
     </motion.div>
@@ -585,7 +585,7 @@ export function HomePage({ initialProperties = properties }: { initialProperties
           <motion.div
             className="hero-copy"
             style={{ y: heroCopyY }}
-            initial={{ opacity: 0, y: 28 }}
+            initial={reduceMotion ? false : { opacity: 0, y: 28 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
           >
@@ -792,7 +792,7 @@ export function HomePage({ initialProperties = properties }: { initialProperties
         </motion.div>
       </section>
 
-      <section className="buyer-support-section motion-section">
+      <section className="buyer-support-section motion-section" id="buyer-support">
         <FadeUp className="buyer-support-copy">
           <p className="section-kicker section-kicker--light">สำหรับผู้ซื้อ</p>
           <h2>เห็นข้อมูลสำคัญ<br />ก่อนตัดสินใจ</h2>
@@ -845,7 +845,7 @@ export function HomePage({ initialProperties = properties }: { initialProperties
         </motion.div>
         <FadeUp className="about-copy">
           <p className="section-kicker section-kicker--light">รู้จักนุช</p>
-          <h2>ดูแลเอง<br />ทุกเคส</h2>
+          <h2>ดูแลเอง<br className="mobile-break" />ทุกเคส</h2>
           <p className="about-lead">
             นุชเชื่อว่าการซื้อ–ขายบ้านต้องเริ่มจากข้อมูลที่ตรงไปตรงมา
             จึงดูแลเองทุกเคส ตั้งแต่ราคา การตลาด ผู้ซื้อ สินเชื่อ เอกสาร
@@ -913,8 +913,8 @@ export function HomePage({ initialProperties = properties }: { initialProperties
               <motion.div
                 className={`success-card success-card--${(index % 3) + 1}`}
                 key={image}
-                initial={{ opacity: 0, y: 34 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={reduceMotion ? false : { opacity: 0, y: 34 }}
+                whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-80px" }}
                 whileHover={reduceMotion ? undefined : { y: -12, scale: 1.025, rotateZ: index % 2 === 0 ? -0.7 : 0.7 }}
                 transition={{ duration: 0.6, delay: index * 0.06 }}
@@ -980,7 +980,7 @@ export function HomePage({ initialProperties = properties }: { initialProperties
         </FadeUp>
       </section>
 
-      <section className="section faq-section motion-section">
+      <section className="section faq-section motion-section" id="faq">
         <FadeUp className="faq-heading">
           <p className="section-kicker">ก่อนเริ่มคุยกัน</p>
           <h2>คำถามที่พบบ่อย</h2>
@@ -1001,7 +1001,7 @@ export function HomePage({ initialProperties = properties }: { initialProperties
         </div>
       </section>
 
-      <footer className="motion-section">
+      <footer className="motion-section" id="contact">
         <motion.div
           className="footer-main"
           initial={reduceMotion ? false : { opacity: 0, y: 36, scale: 0.985 }}
