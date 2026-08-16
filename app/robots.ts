@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-const SITE_URL = "https://rich-asset-property.widaratnuch17.chatgpt.site";
+const SITE_URL = "https://rich-asset-property.richassetproperty.workers.dev";
 
 export default function robots(): MetadataRoute.Robots {
   return {

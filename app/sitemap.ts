@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getManagedProperties } from "../db/managed-properties";
 
-const SITE_URL = "https://rich-asset-property.widaratnuch17.chatgpt.site";
+const SITE_URL = "https://rich-asset-property.richassetproperty.workers.dev";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages: MetadataRoute.Sitemap = [

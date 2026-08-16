@@ -23,7 +23,7 @@ export default async function AdminContentPage({ searchParams }: AdminContentPag
     headers(),
     searchParams,
   ]);
-  const host = requestHeaders.get("host") ?? "rich-asset-property.widaratnuch17.workers.dev";
+  const host = requestHeaders.get("host") ?? "rich-asset-property.richassetproperty.workers.dev";
   const protocol = requestHeaders.get("x-forwarded-proto") === "http" ? "http" : "https";
   const siteUrl = `${protocol}://${host}`;
 
