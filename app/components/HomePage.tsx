@@ -462,7 +462,6 @@ export function HomePage({ initialProperties = properties }: { initialProperties
   const reduceMotion = useReducedMotion();
   const { scrollYProgress } = useScroll();
   const smoothProgress = useSpring(scrollYProgress, { stiffness: 90, damping: 24, mass: 0.28 });
-  const heroVisualY = useTransform(scrollYProgress, [0, 0.22], [0, reduceMotion ? 0 : 72]);
   const heroCopyY = useTransform(scrollYProgress, [0, 0.18], [0, reduceMotion ? 0 : -28]);
 
   const propertyTypes = useMemo(
@@ -564,9 +563,24 @@ export function HomePage({ initialProperties = properties }: { initialProperties
         </AnimatePresence>
       </motion.header>
 
-      <section className="hero" id="top">
-        <div className="hero-orb hero-orb--one" />
-        <div className="hero-orb hero-orb--two" />
+      <section className="hero hero--cinematic" id="top">
+        <motion.div
+          className="hero-cinematic-media"
+          initial={reduceMotion ? false : { opacity: 0, scale: 1.045 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
+          aria-hidden="true"
+        >
+          <Image
+            src="/assets/hero-rich-asset-v2.png"
+            alt=""
+            fill
+            sizes="100vw"
+            priority
+          />
+        </motion.div>
+        <div className="hero-cinematic-shade" aria-hidden="true" />
+        <div className="hero-cinematic-grid" aria-hidden="true" />
         <div className="hero-content" id="main-content">
           <motion.div
             className="hero-copy"
@@ -577,7 +591,7 @@ export function HomePage({ initialProperties = properties }: { initialProperties
           >
             <p className="eyebrow">
               <span />
-              บ้านมือสองที่เข้าใจทั้งคนซื้อและคนขาย
+              ซื้อ • ขาย • ฝาก • เช่า อสังหาริมทรัพย์
             </p>
             <h1>
               <span className="hero-title-line">ซื้อ–ขายบ้าน</span>
@@ -594,43 +608,10 @@ export function HomePage({ initialProperties = properties }: { initialProperties
               <span><Check /> ดูแลเองทุกเคส</span>
             </div>
           </motion.div>
-
-          <motion.div
-            className="hero-visual"
-            style={{ y: heroVisualY }}
-            initial={{ opacity: 0, scale: 0.96, y: 24 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 0.85, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <div className="hero-house">
-              <Image
-                src="/assets/property-mirth-cover.jpg"
-                alt="ทาวน์โฮมที่ดูแลโดย Rich Asset Property"
-                fill
-                sizes="(max-width: 900px) 92vw, 48vw"
-                priority
-              />
-              <div className="hero-house-label">
-                <span>ทรัพย์แนะนำ</span>
-                <strong>The Mirth Lite</strong>
-                <small>เพชรเกษม 63 • 4.69 ล้านบาท</small>
-              </div>
-            </div>
-            <div className="nuch-cutout">
-              <Image
-                src="/assets/nuch-portrait.svg"
-                alt="นุช นายหน้าอสังหาริมทรัพย์ Rich Asset Property"
-                fill
-                sizes="(max-width: 900px) 50vw, 22vw"
-                priority
-              />
-            </div>
-            <div className="hero-badge">
-              <KeyRound />
-              <span><strong>ครบทุกขั้นตอน</strong><small>จนถึงวันโอน</small></span>
-            </div>
-          </motion.div>
         </div>
+        <p className="hero-cinematic-signature" aria-hidden="true">
+          RICH ASSET PROPERTY <span /> NONTHABURI · BANGKOK
+        </p>
         <a className="scroll-cue" href="#properties">
           ดูทรัพย์เด่น
           <ArrowDown size={17} />

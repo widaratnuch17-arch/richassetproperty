@@ -1,10 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { Anuphan } from "next/font/google";
+import { Prompt } from "next/font/google";
 import { headers } from "next/headers";
 import "./globals.css";
 
-const anuphan = Anuphan({
-  variable: "--font-anuphan",
+const prompt = Prompt({
+  variable: "--font-prompt",
   subsets: ["thai", "latin"],
   weight: ["300", "400", "500", "600", "700"],
   display: "swap",
@@ -80,7 +80,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="th">
-      <body className={anuphan.variable}>{children}</body>
+      <body className={prompt.variable}>{children}</body>
     </html>
   );
 }
