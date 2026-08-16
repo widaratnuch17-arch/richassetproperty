@@ -7460,6 +7460,11 @@ footer.motion-section {
     gap: 10px;
   }
 
+  .header-line {
+    padding-inline: 12px;
+    font-size: 0;
+  }
+
   .brand {
     gap: 5px;
   }
