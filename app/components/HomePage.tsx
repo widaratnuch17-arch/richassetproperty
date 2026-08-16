@@ -35,7 +35,7 @@ import {
 } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ListingLeadForm } from "./ListingLeadForm";
 
 const PHONE = "061-359-1699";
@@ -284,6 +284,47 @@ function PropertyModal({
   onClose: () => void;
 }) {
   const [activeImage, setActiveImage] = useState(0);
+  const modalRef = useRef<HTMLDivElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    const previouslyFocused = document.activeElement as HTMLElement | null;
+    closeButtonRef.current?.focus();
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+        return;
+      }
+
+      if (event.key !== "Tab" || !modalRef.current) return;
+
+      const focusableElements = Array.from(
+        modalRef.current.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ),
+      );
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements.at(-1);
+
+      if (!firstElement || !lastElement) return;
+
+      if (event.shiftKey && document.activeElement === firstElement) {
+        event.preventDefault();
+        lastElement.focus();
+      } else if (!event.shiftKey && document.activeElement === lastElement) {
+        event.preventDefault();
+        firstElement.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      previouslyFocused?.focus();
+    };
+  }, [onClose]);
 
   const moveImage = (direction: number) => {
     setActiveImage(
@@ -297,7 +338,8 @@ function PropertyModal({
       className="modal-backdrop"
       role="dialog"
       aria-modal="true"
-      aria-label={`รายละเอียด ${property.title}`}
+      aria-labelledby="property-modal-title"
+      aria-describedby="property-modal-summary"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -306,13 +348,20 @@ function PropertyModal({
       }}
     >
       <motion.div
+        ref={modalRef}
         className="property-modal"
         initial={{ opacity: 0, scale: 0.97, y: 24 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.98, y: 16 }}
         transition={{ duration: 0.25 }}
       >
-        <button className="modal-close" type="button" onClick={onClose} aria-label="ปิด">
+        <button
+          ref={closeButtonRef}
+          className="modal-close"
+          type="button"
+          onClick={onClose}
+          aria-label="ปิดรายละเอียดทรัพย์"
+        >
           <X size={22} />
         </button>
 
@@ -323,22 +372,26 @@ function PropertyModal({
             fill
             sizes="(max-width: 900px) 100vw, 58vw"
           />
-          <button
-            type="button"
-            className="gallery-nav gallery-nav--left"
-            onClick={() => moveImage(-1)}
-            aria-label="ภาพก่อนหน้า"
-          >
-            <ChevronLeft />
-          </button>
-          <button
-            type="button"
-            className="gallery-nav gallery-nav--right"
-            onClick={() => moveImage(1)}
-            aria-label="ภาพถัดไป"
-          >
-            <ChevronRight />
-          </button>
+          {property.images.length > 1 && (
+            <>
+              <button
+                type="button"
+                className="gallery-nav gallery-nav--left"
+                onClick={() => moveImage(-1)}
+                aria-label="ภาพก่อนหน้า"
+              >
+                <ChevronLeft />
+              </button>
+              <button
+                type="button"
+                className="gallery-nav gallery-nav--right"
+                onClick={() => moveImage(1)}
+                aria-label="ภาพถัดไป"
+              >
+                <ChevronRight />
+              </button>
+            </>
+          )}
           <span className="gallery-count">
             {activeImage + 1} / {property.images.length}
           </span>
@@ -350,7 +403,7 @@ function PropertyModal({
             <span className="dot" />
             <span>{propertyStatusLabels[property.status ?? "active"]}</span>
           </div>
-          <h2>{property.title}</h2>
+          <h2 id="property-modal-title">{property.title}</h2>
           <p className="location-line">
             <MapPin size={17} />
             {property.location}
@@ -363,7 +416,7 @@ function PropertyModal({
             <span><Bath /> {property.bathrooms} ห้องน้ำ</span>
             <span><CarFront /> {property.parking} ที่จอดรถ</span>
           </div>
-          <p className="modal-summary">{property.summary}</p>
+          <p className="modal-summary" id="property-modal-summary">{property.summary}</p>
           <div className="modal-lists">
             <div>
               <h3>จุดเด่น</h3>
@@ -403,13 +456,19 @@ function PropertyModal({
 
 export function HomePage({ initialProperties = properties }: { initialProperties?: Property[] }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [filter, setFilter] = useState<"ทั้งหมด" | Property["type"]>("ทั้งหมด");
+  const [filter, setFilter] = useState<string>("ทั้งหมด");
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
   const reduceMotion = useReducedMotion();
   const { scrollYProgress } = useScroll();
   const smoothProgress = useSpring(scrollYProgress, { stiffness: 90, damping: 24, mass: 0.28 });
   const heroVisualY = useTransform(scrollYProgress, [0, 0.22], [0, reduceMotion ? 0 : 72]);
   const heroCopyY = useTransform(scrollYProgress, [0, 0.18], [0, reduceMotion ? 0 : -28]);
+
+  const propertyTypes = useMemo(
+    () => ["ทั้งหมด", ...Array.from(new Set(initialProperties.map((property) => property.type)))],
+    [initialProperties],
+  );
 
   const filteredProperties = useMemo(
     () =>
@@ -418,6 +477,21 @@ export function HomePage({ initialProperties = properties }: { initialProperties
         : initialProperties.filter((property) => property.type === filter),
     [filter, initialProperties],
   );
+
+  const closeProperty = useCallback(() => setSelectedProperty(null), []);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+
+    const closeMenu = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setMenuOpen(false);
+      menuButtonRef.current?.focus();
+    };
+
+    document.addEventListener("keydown", closeMenu);
+    return () => document.removeEventListener("keydown", closeMenu);
+  }, [menuOpen]);
 
   return (
     <main>
@@ -456,10 +530,12 @@ export function HomePage({ initialProperties = properties }: { initialProperties
         </a>
 
         <button
+          ref={menuButtonRef}
           type="button"
           className="menu-button"
           aria-label={menuOpen ? "ปิดเมนู" : "เปิดเมนู"}
           aria-expanded={menuOpen}
+          aria-controls="mobile-navigation"
           onClick={() => setMenuOpen((open) => !open)}
         >
           {menuOpen ? <X /> : <Menu />}
@@ -468,6 +544,7 @@ export function HomePage({ initialProperties = properties }: { initialProperties
         <AnimatePresence>
           {menuOpen && (
             <motion.nav
+              id="mobile-navigation"
               className="mobile-nav"
               aria-label="เมนูมือถือ"
               initial={{ opacity: 0, y: -12 }}
@@ -631,20 +708,27 @@ export function HomePage({ initialProperties = properties }: { initialProperties
           </p>
         </FadeUp>
 
-        <div className="filter-row" role="group" aria-label="กรองประเภททรัพย์">
-          {(["ทั้งหมด", "บ้านแฝด", "ทาวน์โฮม"] as const).map((item) => (
-            <button
-              type="button"
-              key={item}
-              className={filter === item ? "active" : ""}
-              onClick={() => setFilter(item)}
-            >
-              {item}
-            </button>
-          ))}
+        <div className="property-filter-toolbar">
+          <div className="filter-row" role="group" aria-label="กรองประเภททรัพย์">
+            {propertyTypes.map((item) => (
+              <button
+                type="button"
+                key={item}
+                className={filter === item ? "active" : ""}
+                aria-pressed={filter === item}
+                aria-controls="property-results"
+                onClick={() => setFilter(item)}
+              >
+                {item}
+              </button>
+            ))}
+          </div>
+          <p className="filter-result" aria-live="polite">
+            พบ {filteredProperties.length} รายการ
+          </p>
         </div>
 
-        <motion.div className="property-grid" layout>
+        <motion.div className="property-grid" id="property-results" layout>
           <AnimatePresence mode="popLayout">
             {filteredProperties.map((property, index) => (
               <motion.article
@@ -693,6 +777,14 @@ export function HomePage({ initialProperties = properties }: { initialProperties
               </motion.article>
             ))}
           </AnimatePresence>
+          {filteredProperties.length === 0 && (
+            <div className="property-empty" role="status">
+              <Search aria-hidden />
+              <strong>ยังไม่มีทรัพย์ประเภทนี้ในขณะนี้</strong>
+              <span>ทัก LINE เพื่อให้นุชช่วยค้นหาทรัพย์ที่ตรงกับความต้องการได้เลย</span>
+              <a href={LINE_URL} target="_blank" rel="noreferrer">แจ้งทรัพย์ที่กำลังมองหา</a>
+            </div>
+          )}
         </motion.div>
       </section>
 
@@ -928,7 +1020,7 @@ export function HomePage({ initialProperties = properties }: { initialProperties
         {selectedProperty && (
           <PropertyModal
             property={selectedProperty}
-            onClose={() => setSelectedProperty(null)}
+            onClose={closeProperty}
           />
         )}
       </AnimatePresence>
