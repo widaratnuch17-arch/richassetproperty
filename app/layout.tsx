@@ -1,10 +1,10 @@
 import type { Metadata, Viewport } from "next";
-import { Prompt } from "next/font/google";
+import { IBM_Plex_Sans_Thai } from "next/font/google";
 import { headers } from "next/headers";
 import "./globals.css";
 
-const prompt = Prompt({
-  variable: "--font-prompt",
+const ibmPlexSansThai = IBM_Plex_Sans_Thai({
+  variable: "--font-ibm-plex-thai",
   subsets: ["thai", "latin"],
   weight: ["300", "400", "500", "600", "700"],
   display: "swap",
@@ -80,7 +80,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="th">
-      <body className={prompt.variable}>{children}</body>
+      <body className={ibmPlexSansThai.variable}>{children}</body>
     </html>
   );
 }

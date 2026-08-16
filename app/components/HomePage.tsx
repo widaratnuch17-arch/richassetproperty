@@ -251,10 +251,10 @@ function FadeUp({
   return (
     <motion.div
       className={className}
-      initial={reduceMotion ? false : { opacity: 0, y: 34, filter: "blur(8px)" }}
-      whileInView={reduceMotion ? undefined : { opacity: 1, y: 0, filter: "blur(0px)" }}
+      initial={reduceMotion ? false : { opacity: 0, y: 38, scale: 0.982, filter: "blur(9px)" }}
+      whileInView={reduceMotion ? undefined : { opacity: 1, y: 0, scale: 1, filter: "blur(0px)" }}
       viewport={{ once: true, margin: "-60px" }}
-      transition={{ duration: 0.78, delay, ease: [0.16, 1, 0.3, 1] }}
+      transition={{ duration: 0.82, delay, ease: [0.16, 1, 0.3, 1] }}
     >
       {children}
     </motion.div>
@@ -618,26 +618,46 @@ export function HomePage({ initialProperties = properties }: { initialProperties
         </a>
       </section>
 
-      <section className="trust-strip" aria-label="ข้อเสนอรับฝากขาย">
-        <div>
+      <section className="trust-strip motion-section" aria-label="ข้อเสนอรับฝากขาย">
+        <motion.div
+          initial={reduceMotion ? false : { opacity: 0, y: 24 }}
+          whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.6, delay: 0.03 }}
+        >
           <span>01</span>
           <p><strong>0 บาท</strong><small>ค่าใช้จ่ายการตลาดล่วงหน้า</small></p>
-        </div>
-        <div>
+        </motion.div>
+        <motion.div
+          initial={reduceMotion ? false : { opacity: 0, y: 24 }}
+          whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.6, delay: 0.09 }}
+        >
           <span>02</span>
           <p><strong>3%</strong><small>ค่าคอมมิชชันเมื่อขายสำเร็จ</small></p>
-        </div>
-        <div>
+        </motion.div>
+        <motion.div
+          initial={reduceMotion ? false : { opacity: 0, y: 24 }}
+          whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.6, delay: 0.15 }}
+        >
           <span>03</span>
           <p><strong>6 เดือน</strong><small>สัญญาฝากขายแบบปิด</small></p>
-        </div>
-        <div>
+        </motion.div>
+        <motion.div
+          initial={reduceMotion ? false : { opacity: 0, y: 24 }}
+          whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.6, delay: 0.21 }}
+        >
           <span>04</span>
           <p><strong>ครบวงจร</strong><small>ราคา การตลาด สินเชื่อ เอกสาร</small></p>
-        </div>
+        </motion.div>
       </section>
 
-      <section className="audience-section" aria-labelledby="audience-title">
+      <section className="audience-section motion-section" aria-labelledby="audience-title">
         <FadeUp className="audience-heading">
           <p className="section-kicker">เริ่มจากสิ่งที่คุณต้องการ</p>
           <h2 id="audience-title">วันนี้คุณกำลัง<br />มองหาอะไร?</h2>
@@ -677,7 +697,7 @@ export function HomePage({ initialProperties = properties }: { initialProperties
         </FadeUp>
       </section>
 
-      <section className="section properties-section" id="properties">
+      <section className="section properties-section motion-section" id="properties">
         <FadeUp className="section-heading-row">
           <div>
             <p className="section-kicker">ทรัพย์คัดสรร</p>
@@ -716,10 +736,13 @@ export function HomePage({ initialProperties = properties }: { initialProperties
                 className="property-card"
                 key={property.id}
                 layout
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={reduceMotion ? false : { opacity: 0, y: 28, scale: 0.97, rotateX: 4 }}
+                whileInView={reduceMotion ? undefined : { opacity: 1, y: 0, scale: 1, rotateX: 0 }}
+                viewport={{ once: true, margin: "-60px" }}
                 exit={{ opacity: 0, scale: 0.98 }}
-                transition={{ duration: 0.35, delay: index * 0.06 }}
+                whileHover={reduceMotion ? undefined : { y: -10, scale: 1.012, rotateX: 1.2 }}
+                transition={{ duration: 0.52, delay: index * 0.06, ease: [0.16, 1, 0.3, 1] }}
+                style={{ transformPerspective: 1200 }}
               >
                 <button
                   type="button"
@@ -769,7 +792,7 @@ export function HomePage({ initialProperties = properties }: { initialProperties
         </motion.div>
       </section>
 
-      <section className="buyer-support-section">
+      <section className="buyer-support-section motion-section">
         <FadeUp className="buyer-support-copy">
           <p className="section-kicker section-kicker--light">สำหรับผู้ซื้อ</p>
           <h2>เห็นข้อมูลสำคัญ<br />ก่อนตัดสินใจ</h2>
@@ -798,8 +821,15 @@ export function HomePage({ initialProperties = properties }: { initialProperties
         </div>
       </section>
 
-      <section className="about-section" id="about">
-        <div className="about-image-wrap">
+      <section className="about-section motion-section" id="about">
+        <motion.div
+          className="about-image-wrap"
+          initial={reduceMotion ? false : { opacity: 0, x: -46, scale: 0.95, rotateY: -5 }}
+          whileInView={reduceMotion ? undefined : { opacity: 1, x: 0, scale: 1, rotateY: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.95, ease: [0.16, 1, 0.3, 1] }}
+          style={{ transformPerspective: 1200 }}
+        >
           <div className="about-image">
             <Image
               src="/assets/nuch-about.svg"
@@ -812,7 +842,7 @@ export function HomePage({ initialProperties = properties }: { initialProperties
             <House />
             <span>นุช<br /><strong>Rich Asset Property</strong></span>
           </div>
-        </div>
+        </motion.div>
         <FadeUp className="about-copy">
           <p className="section-kicker section-kicker--light">รู้จักนุช</p>
           <h2>ดูแลเอง<br />ทุกเคส</h2>
@@ -830,7 +860,7 @@ export function HomePage({ initialProperties = properties }: { initialProperties
         </FadeUp>
       </section>
 
-      <section className="section services-section" id="services">
+      <section className="section services-section motion-section" id="services">
         <FadeUp className="services-title">
           <p className="section-kicker">ขั้นตอนการทำงาน</p>
           <h2>หนึ่งคนดูแล<br />ครบทุกขั้นตอน</h2>
@@ -864,7 +894,7 @@ export function HomePage({ initialProperties = properties }: { initialProperties
         </div>
       </section>
 
-      <section className="success-section" id="success">
+      <section className="success-section motion-section" id="success">
         <div className="success-head">
           <FadeUp>
             <p className="section-kicker section-kicker--light">ผลงานจริง</p>
@@ -886,6 +916,7 @@ export function HomePage({ initialProperties = properties }: { initialProperties
                 initial={{ opacity: 0, y: 34 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-80px" }}
+                whileHover={reduceMotion ? undefined : { y: -12, scale: 1.025, rotateZ: index % 2 === 0 ? -0.7 : 0.7 }}
                 transition={{ duration: 0.6, delay: index * 0.06 }}
               >
                 <Image
@@ -901,7 +932,7 @@ export function HomePage({ initialProperties = properties }: { initialProperties
         </div>
       </section>
 
-      <section className="seller-section" id="sell">
+      <section className="seller-section motion-section" id="sell">
         <div className="seller-card">
           <FadeUp>
             <p className="section-kicker">สำหรับเจ้าของทรัพย์</p>
@@ -926,7 +957,7 @@ export function HomePage({ initialProperties = properties }: { initialProperties
         </div>
       </section>
 
-      <section className="listing-form-section" id="listing-form">
+      <section className="listing-form-section motion-section" id="listing-form">
         <FadeUp className="listing-form-intro">
           <p className="section-kicker section-kicker--light">เริ่มฝากขายกับนุช</p>
           <h2>ส่งข้อมูลเบื้องต้น<br />ใช้เวลาไม่กี่นาที</h2>
@@ -949,7 +980,7 @@ export function HomePage({ initialProperties = properties }: { initialProperties
         </FadeUp>
       </section>
 
-      <section className="section faq-section">
+      <section className="section faq-section motion-section">
         <FadeUp className="faq-heading">
           <p className="section-kicker">ก่อนเริ่มคุยกัน</p>
           <h2>คำถามที่พบบ่อย</h2>
@@ -970,8 +1001,14 @@ export function HomePage({ initialProperties = properties }: { initialProperties
         </div>
       </section>
 
-      <footer>
-        <div className="footer-main">
+      <footer className="motion-section">
+        <motion.div
+          className="footer-main"
+          initial={reduceMotion ? false : { opacity: 0, y: 36, scale: 0.985 }}
+          whileInView={reduceMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
+        >
           <Image
             src="/assets/brand-logo.svg"
             alt="Rich Asset Property"
@@ -983,7 +1020,7 @@ export function HomePage({ initialProperties = properties }: { initialProperties
             <h2>ให้เรื่องซื้อ–ขายบ้าน<br />ชัดเจนตั้งแต่วันแรก</h2>
           </div>
           <ContactButtons />
-        </div>
+        </motion.div>
         <div className="footer-bottom">
           <p>© 2026 Rich Asset Property</p>
           <p>โทร {PHONE} · LINE {LINE_ID}</p>

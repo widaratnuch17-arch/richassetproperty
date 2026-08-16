@@ -15,8 +15,8 @@
   --radius-md: 24px;
   --shadow: 0 22px 70px rgba(6, 63, 140, 0.14);
   --ease-premium: cubic-bezier(0.16, 1, 0.3, 1);
-  --font-sans: var(--font-prompt), "Noto Sans Thai", system-ui, sans-serif;
-  --font-serif: var(--font-prompt), "Noto Sans Thai", system-ui, sans-serif;
+  --font-sans: var(--font-ibm-plex-thai), "Noto Sans Thai", system-ui, sans-serif;
+  --font-serif: var(--font-ibm-plex-thai), "Noto Sans Thai", system-ui, sans-serif;
 }
 
 * {
@@ -7150,5 +7150,172 @@ footer h2 {
   .hero.hero--cinematic h1 {
     font-size: clamp(2.65rem, 11.8vw, 3.45rem);
     line-height: 1.1;
+  }
+}
+
+/* Premium motion system for every public section. */
+.motion-section {
+  --motion-orb-color: rgba(65, 145, 214, 0.16);
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+}
+
+.motion-section::after {
+  position: absolute;
+  z-index: 0;
+  top: 14%;
+  right: -14%;
+  width: clamp(260px, 34vw, 560px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--motion-orb-color) 0%, transparent 68%);
+  content: "";
+  filter: blur(4px);
+  opacity: 0.78;
+  pointer-events: none;
+  animation: section-orbit 13s var(--ease-premium) infinite alternate;
+}
+
+.motion-section > * {
+  position: relative;
+  z-index: 1;
+}
+
+.properties-section::after,
+.about-section::after,
+.seller-section::after,
+.faq-section::after {
+  right: auto;
+  left: -14%;
+  animation-name: section-orbit-reverse;
+}
+
+.trust-strip,
+.buyer-support-section,
+.about-section,
+.success-section,
+.listing-form-section,
+footer.motion-section {
+  --motion-orb-color: rgba(142, 199, 243, 0.13);
+}
+
+@keyframes section-orbit {
+  0% { transform: translate3d(-4%, -5%, 0) scale(0.88); opacity: 0.48; }
+  55% { transform: translate3d(-14%, 14%, 0) scale(1.08); opacity: 0.82; }
+  100% { transform: translate3d(5%, 24%, 0) scale(0.96); opacity: 0.58; }
+}
+
+@keyframes section-orbit-reverse {
+  0% { transform: translate3d(8%, 18%, 0) scale(0.92); opacity: 0.5; }
+  55% { transform: translate3d(18%, -8%, 0) scale(1.09); opacity: 0.8; }
+  100% { transform: translate3d(-2%, -18%, 0) scale(0.98); opacity: 0.56; }
+}
+
+.audience-card,
+.property-card,
+.service-row,
+.service-photo,
+.faq-list details {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  transform-style: preserve-3d;
+}
+
+.audience-card::after,
+.property-card::after,
+.service-row::after,
+.service-photo::after,
+.faq-list details::after {
+  position: absolute;
+  z-index: 8;
+  top: -50%;
+  bottom: -50%;
+  left: -36%;
+  width: 18%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.34), transparent);
+  content: "";
+  opacity: 0;
+  pointer-events: none;
+  transform: skewX(-18deg) translateX(-140%);
+  transition: transform 0.95s var(--ease-premium), opacity 0.28s ease;
+}
+
+.audience-card:hover::after,
+.property-card:hover::after,
+.service-row:hover::after,
+.service-photo:hover::after,
+.faq-list details:hover::after {
+  opacity: 0.58;
+  transform: skewX(-18deg) translateX(900%);
+}
+
+.audience-icon,
+.service-icon,
+.buyer-support-list > div > span,
+.about-values > div > svg {
+  animation: icon-levitate 5.6s ease-in-out infinite;
+}
+
+.audience-card:nth-child(2) .audience-icon,
+.service-row:nth-child(2n) .service-icon,
+.buyer-support-list > div:nth-child(2) > span,
+.about-values > div:nth-child(2) > svg {
+  animation-delay: -2.2s;
+}
+
+.service-row:nth-child(3n) .service-icon,
+.buyer-support-list > div:nth-child(3) > span,
+.about-values > div:nth-child(3) > svg {
+  animation-delay: -3.7s;
+}
+
+@keyframes icon-levitate {
+  0%, 100% { translate: 0 0; rotate: 0deg; }
+  48% { translate: 0 -5px; rotate: -2deg; }
+  72% { translate: 0 -2px; rotate: 1.5deg; }
+}
+
+.about-image img,
+.service-photo img,
+.success-card img,
+.property-image img {
+  transition: scale 1s var(--ease-premium), filter 0.8s ease;
+}
+
+.about-image-wrap:hover .about-image img,
+.service-photo:hover img,
+.success-card:hover img,
+.property-card:hover .property-image img {
+  scale: 1.055;
+  filter: saturate(1.06) contrast(1.02);
+}
+
+.trust-strip > div strong,
+.success-card > span,
+.service-number {
+  text-shadow: 0 0 24px rgba(142, 199, 243, 0.18);
+  transition: color 0.35s ease, text-shadow 0.35s ease;
+}
+
+.trust-strip > div:hover strong,
+.service-row:hover .service-number {
+  color: #8ec7f3;
+  text-shadow: 0 0 30px rgba(142, 199, 243, 0.48);
+}
+
+@media (max-width: 600px) {
+  .motion-section::after {
+    width: 360px;
+    opacity: 0.5;
+  }
+
+  .audience-card::after,
+  .property-card::after,
+  .service-row::after,
+  .service-photo::after,
+  .faq-list details::after {
+    display: none;
   }
 }
